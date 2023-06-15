@@ -5,6 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PlatformTarget>x64</PlatformTarget>
+    <RootNamespace>Debaters.Server</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="VeloxDB" Version="0.2.1" />
+    <PackageReference Include="VeloxDB.Protocol" Version="0.2.1" />
+  </ItemGroup>
 
 </Project>
