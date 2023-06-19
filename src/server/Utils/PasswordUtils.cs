@@ -1,7 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Debaters.Server;
+namespace Debaters.Server.Utils;
+
 internal class PasswordUtils
 {
 	private static readonly byte[] pepper = GetPepper();

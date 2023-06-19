@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "shared", "shared\shared.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "server", "server\server.csproj", "{30CC5D5A-80FB-4595-8FD2-490FB73719B8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{FE9D8EDA-2744-4B4F-A589-1CFF6E40C31A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "servertest", "tests\servertest\servertest.csproj", "{841C4739-04E0-4C73-BB87-59CC5861C919}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -30,5 +34,12 @@ Global
 		{30CC5D5A-80FB-4595-8FD2-490FB73719B8}.Debug|x64.Build.0 = Debug|Any CPU
 		{30CC5D5A-80FB-4595-8FD2-490FB73719B8}.Release|x64.ActiveCfg = Release|Any CPU
 		{30CC5D5A-80FB-4595-8FD2-490FB73719B8}.Release|x64.Build.0 = Release|Any CPU
+		{841C4739-04E0-4C73-BB87-59CC5861C919}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{841C4739-04E0-4C73-BB87-59CC5861C919}.Debug|x64.Build.0 = Debug|Any CPU
+		{841C4739-04E0-4C73-BB87-59CC5861C919}.Release|x64.ActiveCfg = Release|Any CPU
+		{841C4739-04E0-4C73-BB87-59CC5861C919}.Release|x64.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{841C4739-04E0-4C73-BB87-59CC5861C919} = {FE9D8EDA-2744-4B4F-A589-1CFF6E40C31A}
 	EndGlobalSection
 EndGlobal
