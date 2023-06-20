@@ -9,7 +9,7 @@ namespace Debaters.Server;
 
 public enum RegisterResult
 {
-	UserAlreadyExists,
+	AlreadyExists,
 	InvalidPassword,
 	InvalidUsername,
 	InvalidEmail,
@@ -35,7 +35,7 @@ public class UserAPI
 
 		if(om.UserExists(username))
 		{
-			return RegisterResult.UserAlreadyExists;
+			return RegisterResult.AlreadyExists;
 		}
 
 		byte[] hash = PasswordUtils.HashPassword(password);
@@ -71,8 +71,7 @@ public class UserAPI
 		return true;
 	}
 
-	private static readonly Regex UsernameRegex = new Regex("^[a-zA-Z0-9]+$");
-	private bool IsValidUsername(string username) => UsernameRegex.IsMatch(username);
+	private bool IsValidUsername(string username) => username.IsAlphanumeric();
 
 	private static readonly Regex EmailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
 	private bool IsValidEMail(string email) => EmailRegex.IsMatch(email);

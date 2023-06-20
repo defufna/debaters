@@ -17,4 +17,16 @@ public static class ObjectModelExtensions
 		user = index.GetObject(username.ToLower());
 		return user != null;
 	}
+
+	public static bool CommunityExists(this ObjectModel om, string name)
+	{
+		return TryGetCommunity(om, name, out _);
+	}
+
+	public static bool TryGetCommunity(this ObjectModel om, string name, [MaybeNullWhen(false)] out Community? community)
+	{
+		HashIndexReader<Community, string> index = Community.GetCommunityNameIndex(om);
+		community = index.GetObject(name.ToLower());
+		return community != null;
+	}
 }
