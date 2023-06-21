@@ -12,7 +12,7 @@ public abstract class Comment : Node
 	[DatabaseProperty]
 	public abstract string Content { get; set; }
 
-	[DatabaseReference(true, DeleteTargetAction.SetToNull)]
+	[DatabaseReference(true, DeleteTargetAction.PreventDelete)]
 	public abstract Node Parent { get; set; }
 }
 
