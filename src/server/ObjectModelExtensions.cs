@@ -29,4 +29,24 @@ public static class ObjectModelExtensions
 		community = index.GetObject(name.ToLower());
 		return community != null;
 	}
+
+	public static VoteStatus GetVoteStatus(this ObjectModel om, long userId, long nodeId)
+	{
+		HashIndexReader<Vote, long, long> index = Vote.GetUsernameHashIndex(om);
+		Vote? vote = index.GetObject(userId, nodeId);
+		if (vote == null)
+			return VoteStatus.NoVote;
+		else
+			return vote.Upvote ? VoteStatus.Upvoted : VoteStatus.Downvoted;
+	}
+
+	public static Vote? GetVote(this ObjectModel om, long userId, long nodeId)
+	{
+		HashIndexReader<Vote, long, long> index = Vote.GetUsernameHashIndex(om);
+		return index.GetObject(userId, nodeId);
+	}
+
+
+
+
 }

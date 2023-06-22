@@ -7,9 +7,6 @@ using VeloxDB.ObjectInterface;
 [DatabaseClass]
 public abstract partial class Comment : Node
 {
-	[DatabaseReference(true, DeleteTargetAction.SetToNull)]
-	public abstract User Author { get; set; }
-
 	[DatabaseProperty]
 	public abstract string Content { get; set; }
 

@@ -53,6 +53,13 @@ public enum SubmitCommentResultCode
 	Success,
 }
 
+public enum VoteResultCode
+{
+	UnknownError,
+	InvalidCommentOrPost,
+	Success
+}
+
 public class DeleteCommentResultCode
 {
 
@@ -62,6 +69,11 @@ public class SubmitCommentResult
 {
 	public SubmitCommentResultCode Code { get; set; }
 	public long Id { get; set; }
+
+	public SubmitCommentResult()
+	{
+
+	}
 
 	public SubmitCommentResult(SubmitCommentResultCode code, long id)
 	{
@@ -81,6 +93,10 @@ public class GetCommentsResult
 	public GetCommentsResultCode Code { get; set; }
 	public List<CommentDTO>? Comments { get; set; }
 
+	public GetCommentsResult()
+	{
+	}
+
 	public GetCommentsResult(GetCommentsResultCode code, List<CommentDTO>? comments)
 	{
 		Code = code;
@@ -99,6 +115,11 @@ public class SubmitPostResult
 	public SubmitPostResultCode Code { get; set; }
 	public long Id { get; set; }
 
+	public SubmitPostResult()
+	{
+
+	}
+
     public SubmitPostResult(SubmitPostResultCode code, long id)
     {
         Code = code;
@@ -112,10 +133,17 @@ public class SubmitPostResult
     }
 }
 
+public enum VoteStatus : short
+{
+	Downvoted = -1,
+	NoVote = 0,
+	Upvoted = 1
+}
+
 public class PostDTO
 {
 	public long Id { get; set; }
-	public bool Upvoted { get; set; }
+	public VoteStatus Upvoted { get; set; }
 
 	public long Upvotes { get; set; }
 	public long Downvotes { get; set; }
@@ -129,7 +157,10 @@ public class CommentDTO
 	public long Parent { get; set; }
 
 	[AutomapperIgnore]
-	public bool Upvoted { get; set; }
+	public string? AutorUsername { get; set; }
+
+	[AutomapperIgnore]
+	public VoteStatus MyVote { get; set; }
 
 	public int Upvotes { get; set; }
 	public int Downvotes { get; set; }
@@ -189,7 +220,7 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation(OperationType = DbAPIOperationType.Read)]
-	public List<PostDTO> GetTopPosts()
+	public List<PostDTO> GetTopPosts(ObjectModel om)
 	{
 		throw new NotImplementedException();
 	}
@@ -293,19 +324,26 @@ public class DebateAPI
 
 		foreach(Comment comment in topComments)
 		{
-			AddWithParents(comment, selected, result);
+			AddWithParents(om, comment, selected, result, loggedIn);
 		}
 
 		return new GetCommentsResult(GetCommentsResultCode.Success, result);
 	}
 
-	private void AddWithParents(Comment comment, HashSet<long> selected, List<CommentDTO> result)
+	private void AddWithParents(ObjectModel om, Comment comment, HashSet<long> selected, List<CommentDTO> result, bool loggedIn)
 	{
 		Comment current = comment;
 
 		while(true)
 		{
 			CommentDTO dto = current.ToDTO();
+			dto.AutorUsername = current.Author.Username;
+
+			if(loggedIn)
+			{
+				dto.MyVote = om.GetVoteStatus(current.Author.Id, current.Id);
+			}
+
 			result.Add(dto);
 
 			if(selected.Contains(current.Parent.Id))
@@ -314,7 +352,7 @@ public class DebateAPI
 			}
 			else
 			{
-				Debug.Assert(current.Parent is Comment, "Comment's Post is already in selected, only comments should arrive in this branch");
+				Debug.Assert(current.Parent is Comment, "Comment's post is already in selected; only comments should arrive in this branch.");
 
 				selected.Add(current.Parent.Id);
 				current = (Comment)current.Parent;
@@ -374,5 +412,35 @@ public class DebateAPI
 	public DeleteCommentResultCode DeleteComment(ObjectModel om, string username, long id)
 	{
 		throw new NotImplementedException();
+	}
+
+	[DbAPIOperation]
+	public VoteResultCode Vote(ObjectModel om, string username, long nodeId, bool upvote)
+	{
+		if(string.IsNullOrEmpty(username) || !om.TryGetUser(username, out var user))
+		{
+			return VoteResultCode.UnknownError;
+		}
+
+		Node? node = om.GetObject<Node>(nodeId);
+
+		if(node == null)
+		{
+			return VoteResultCode.InvalidCommentOrPost;
+		}
+
+		Debug.Assert(user != null);
+
+		Vote? vote = om.GetVote(user.Id, nodeId);
+
+		if(vote == null)
+		{
+			vote = om.CreateObject<Vote>();
+			vote.User = user;
+			vote.Node = node;
+		}
+
+		vote.Upvote = upvote;
+		return VoteResultCode.Success;
 	}
 }
