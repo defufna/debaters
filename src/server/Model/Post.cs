@@ -14,5 +14,8 @@ public abstract class Post : Node
 
 	[DatabaseReference(false, DeleteTargetAction.CascadeDelete)]
 	public abstract Community Community { get; set; }
+
+	[InverseReferences(nameof(Comment.Parent))]
+	public abstract InverseReferenceSet<Comment> Comments { get;  }
 }
 

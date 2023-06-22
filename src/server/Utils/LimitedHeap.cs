@@ -65,6 +65,14 @@ internal class LimitedHeap<T> : IEnumerable<T>
 
 	public IEnumerator<T> GetEnumerator()
 	{
+		if(Count == maxElements)
+			return ((IEnumerable<T>)items).GetEnumerator();
+		else
+			return GetEnumeratorWithCount();
+	}
+
+	private IEnumerator<T> GetEnumeratorWithCount()
+	{
 		for(int i = 0; i < Count; i++)
 			yield return items[i];
 	}

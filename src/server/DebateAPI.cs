@@ -41,7 +41,8 @@ public enum DeletePostResultCode
 public enum GetCommentsResultCode
 {
 	UnknownError,
-	Success
+	InvalidPost,
+	Success,
 }
 
 public enum SubmitCommentResultCode
@@ -125,14 +126,15 @@ public class PostDTO
 public class CommentDTO
 {
 	public long Id { get; set; }
+	public long Parent { get; set; }
+
+	[AutomapperIgnore]
 	public bool Upvoted { get; set; }
 
-	public long Upvotes { get; set; }
-	public long Downvotes { get; set; }
+	public int Upvotes { get; set; }
+	public int Downvotes { get; set; }
 
 	public string? Content { get; set; }
-
-	public List<CommentDTO>? Children { get; set; }
 }
 
 [DbAPI(Name = "DebateAPI")]
@@ -140,6 +142,9 @@ public class DebateAPI
 {
 	private const int minTitleLength = 10;
 	private const int minContentLength = 10;
+	private const int maxTopComments = 10;
+	private const int maxComments = 256;
+	private const int maxDepth = 3;
 
 	[DbAPIOperation]
 	public CreateCommunityResultCode CreateCommunity(ObjectModel om, string username, string communityName)
@@ -250,7 +255,82 @@ public class DebateAPI
 			return GetCommentsResultCode.UnknownError;
 		}
 
+		Post? post = om.GetObject<Post>(postId);
+
+		if(post == null)
+		{
+			return GetCommentsResultCode.InvalidPost;
+		}
+
+		LimitedHeap<Comment> topComments = new LimitedHeap<Comment>(maxComments, CompareTop);
+
+		Queue<(IEnumerable<Comment> comments, int depth)> queue = new();
+
+		queue.Enqueue((post.Comments, 0));
+
+		while (queue.Count > 0)
+		{
+			(IEnumerable<Comment> comments, int depth) = queue.Dequeue();
+
+			foreach(Comment comment in comments)
+			{
+				topComments.Add(comment);
+				if(depth + 1 < maxDepth)
+				{
+					queue.Enqueue((comment.Comments, depth + 1));
+				}
+			}
+		}
+
+		HashSet<long> selected = new HashSet<long>(topComments.Count + 1);
+		foreach(Comment comment in topComments)
+		{
+			selected.Add(comment.Id);
+		}
+		selected.Add(postId);
+
+		List<CommentDTO> result = new List<CommentDTO>(topComments.Count);
+
+		foreach(Comment comment in topComments)
+		{
+			AddWithParents(comment, selected, result);
+		}
+
+		return new GetCommentsResult(GetCommentsResultCode.Success, result);
+	}
+
+	private void AddWithParents(Comment comment, HashSet<long> selected, List<CommentDTO> result)
+	{
+		Comment current = comment;
+
+		while(true)
+		{
+			CommentDTO dto = current.ToDTO();
+			result.Add(dto);
+
+			if(selected.Contains(current.Parent.Id))
+			{
+				break;
+			}
+			else
+			{
+				Debug.Assert(current.Parent is Comment, "Comment's Post is already in selected, only comments should arrive in this branch");
+
+				selected.Add(current.Parent.Id);
+				current = (Comment)current.Parent;
+			}
+		}
+	}
+
+	[DbAPIOperation(OperationType = DbAPIOperationType.Read)]
+	public GetCommentsResult GetCommentSubtree(ObjectModel om, string? username, long commentId, int maxDepth = -1)
+	{
 		throw new NotImplementedException();
+	}
+
+	private int CompareTop(Comment first, Comment second)
+	{
+		return (first.Upvotes + first.Downvotes) - (second.Upvotes + second.Downvotes);
 	}
 
 	[DbAPIOperation]
