@@ -3,6 +3,7 @@ namespace Debaters.Server.Model;
 using System;
 using VeloxDB.Descriptor;
 using VeloxDB.ObjectInterface;
+using Debaters.API;
 
 [DatabaseClass]
 public abstract partial class Comment : Node

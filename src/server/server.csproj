@@ -13,4 +13,8 @@
     <PackageReference Include="VeloxDB.Protocol" Version="0.2.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\shared\shared.csproj" />
+  </ItemGroup>
+
 </Project>

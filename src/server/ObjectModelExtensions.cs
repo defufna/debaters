@@ -1,6 +1,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Debaters.Server.Model;
+using Debaters.API;
 using VeloxDB.ObjectInterface;
 namespace Debaters.Server;
 
