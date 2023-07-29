@@ -1,0 +1,16 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"languageName":"csharp","name":"csharp"}]}}
+
+#!csharp
+
+#r "../../bin/shared/shared.dll"
+#r "nuget:VeloxDB.Protocol"
+
+#!csharp
+
+using VeloxDB.Client;
+using Debaters.API;
+string connString = "address=localhost:7568";
+var api = ConnectionFactory.Get<IDebateAPI>(connString);
+var userApi = ConnectionFactory.Get<IUserAPI>(connString);

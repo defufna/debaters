@@ -1,6 +1,5 @@
 namespace Debaters.Server.Model;
 
-using System;
 using VeloxDB.ObjectInterface;
 
 [DatabaseClass]
