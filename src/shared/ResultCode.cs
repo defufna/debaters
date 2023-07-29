@@ -4,6 +4,7 @@ public enum ResultCode
 {
 	Success,
 	UnknownError,
+	InvalidSession,
 	InvalidName,
 	InvalidCommunity,
 	InvalidTitle,

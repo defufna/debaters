@@ -16,11 +16,11 @@ public class DebateAPI
 	private const int maxDepth = 3;
 
 	[DbAPIOperation]
-	public ResultCode CreateCommunity(ObjectModel om, string username, string communityName)
+	public ResultCode CreateCommunity(ObjectModel om, string sid, string communityName)
 	{
-		if(string.IsNullOrEmpty(username) || !om.UserExists(username))
+		if(string.IsNullOrEmpty(sid) || !om.TryGetSession(sid, out var session))
 		{
-			return ResultCode.UnknownError;
+			return ResultCode.InvalidSession;
 		}
 
 		if(string.IsNullOrEmpty(communityName) || !communityName.IsAlphanumeric())
@@ -40,11 +40,11 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation]
-	public ResultCode DeleteCommunity(ObjectModel om, string username, string communityName)
+	public ResultCode DeleteCommunity(ObjectModel om, string sid, string communityName)
 	{
-		if(string.IsNullOrEmpty(username) || !om.UserExists(username))
+		if(string.IsNullOrEmpty(sid) || !om.TryGetSession(sid, out var session))
 		{
-			return ResultCode.UnknownError;
+			return ResultCode.InvalidSession;
 		}
 
 		if(string.IsNullOrEmpty(communityName) || !om.TryGetCommunity(communityName, out var community))
@@ -64,11 +64,11 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation]
-	public SubmitPostResultDTO SubmitPost(ObjectModel om, string username, string communityName, string title, string content)
+	public SubmitPostResultDTO SubmitPost(ObjectModel om, string sid, string communityName, string title, string content)
 	{
-		if(string.IsNullOrEmpty(username) || !om.UserExists(username))
+		if(string.IsNullOrEmpty(sid) || !om.TryGetSession(sid, out var session))
 		{
-			return ResultCode.UnknownError;
+			return ResultCode.InvalidSession;
 		}
 
 		if(string.IsNullOrEmpty(communityName) || !om.TryGetCommunity(communityName, out var community))
@@ -86,21 +86,22 @@ public class DebateAPI
 			return ResultCode.InvalidContent;
 		}
 
-		Debug.Assert(community != null);
+		Debug.Assert(community != null && session != null);
 
 		Post post = om.CreateObject<Post>();
 		post.Community = community;
 		post.Title = title;
 		post.Content = content;
-		return new SubmitPostResultDTO(ResultCode.Success, post.Id);
+        post.Author = session.User;
+        return new SubmitPostResultDTO(ResultCode.Success, post.Id);
 	}
 
 	[DbAPIOperation]
-	public ResultCode DeletePost(ObjectModel om, string username, long id)
+	public ResultCode DeletePost(ObjectModel om, string sid, long id)
 	{
-		if(string.IsNullOrEmpty(username) || !om.UserExists(username))
+		if(string.IsNullOrEmpty(sid) || !om.TryGetSession(sid, out var session))
 		{
-			return ResultCode.UnknownError;
+			return ResultCode.InvalidSession;
 		}
 
 		Post? post = om.GetObject<Post>(id);
@@ -115,13 +116,13 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation(OperationType = DbAPIOperationType.Read)]
-	public GetCommentsResultDTO GetComments(ObjectModel om, string? username, long postId)
+	public GetCommentsResultDTO GetComments(ObjectModel om, string? sid, long postId)
 	{
-		bool loggedIn = username != null;
+		bool loggedIn = sid != null;
 
-		if(loggedIn && !om.UserExists(username!))
+		if(loggedIn && !om.TryGetSession(sid!, out var session))
 		{
-			return ResultCode.UnknownError;
+			return ResultCode.InvalidSession;
 		}
 
 		Post? post = om.GetObject<Post>(postId);
@@ -199,7 +200,7 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation(OperationType = DbAPIOperationType.Read)]
-	public GetCommentsResultDTO GetCommentSubtree(ObjectModel om, string? username, long commentId, int maxDepth = -1)
+	public GetCommentsResultDTO GetCommentSubtree(ObjectModel om, string? sid, long commentId, int maxDepth = -1)
 	{
 		throw new NotImplementedException();
 	}
@@ -210,11 +211,11 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation]
-	public SubmitCommentResultDTO SubmitComment(ObjectModel om, string username, long parentId, string content)
+	public SubmitCommentResultDTO SubmitComment(ObjectModel om, string sid, long parentId, string content)
 	{
-		if(string.IsNullOrEmpty(username) || !om.TryGetUser(username, out var user))
+		if(string.IsNullOrEmpty(sid) || !om.TryGetSession(sid, out var session))
 		{
-			return ResultCode.UnknownError;
+			return ResultCode.InvalidSession;
 		}
 
 		Comment? parent = om.GetObject<Comment>(parentId);
@@ -229,11 +230,11 @@ public class DebateAPI
 			return ResultCode.InvalidContent;
 		}
 
-		Debug.Assert(user != null);
+		Debug.Assert(session != null);
 
 		Comment comment = om.CreateObject<Comment>();
 
-		comment.Author = user;
+		comment.Author = session.User;
 		comment.Content = content;
 		comment.Posted = DateTime.UtcNow;
 
@@ -253,11 +254,11 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation]
-	public ResultCode Vote(ObjectModel om, string username, long nodeId, bool upvote)
+	public ResultCode Vote(ObjectModel om, string sid, long nodeId, bool upvote)
 	{
-		if(string.IsNullOrEmpty(username) || !om.TryGetUser(username, out var user))
+		if(string.IsNullOrEmpty(sid) || !om.TryGetSession(sid, out var session))
 		{
-			return ResultCode.UnknownError;
+			return ResultCode.InvalidSession;
 		}
 
 		Node? node = om.GetObject<Node>(nodeId);
@@ -267,14 +268,14 @@ public class DebateAPI
 			return ResultCode.InvalidCommentOrPost;
 		}
 
-		Debug.Assert(user != null);
+		Debug.Assert(session != null);
 
-		Vote? vote = om.GetVote(user.Id, nodeId);
+		Vote? vote = om.GetVote(session.User.Id, nodeId);
 
 		if(vote == null)
 		{
 			vote = om.CreateObject<Vote>();
-			vote.User = user;
+			vote.User = session.User;
 			vote.Node = node;
 		}
 

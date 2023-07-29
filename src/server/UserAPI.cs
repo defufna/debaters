@@ -1,5 +1,7 @@
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Debaters.API;
 using Debaters.Server.Model;
@@ -44,13 +46,13 @@ public class UserAPI
     }
 
     [DbAPIOperation]
-    public bool Login(ObjectModel om, string username, string password)
+    public string? Login(ObjectModel om, string username, string password)
     {
         if (username == null || !om.TryGetUser(username, out var user))
-            return false;
+            return null;
 
         if (password == null)
-            return false;
+            return null;
 
         Debug.Assert(user != null);
 
@@ -58,14 +60,24 @@ public class UserAPI
         user.Password.CopyTo(hashedPass, 0);
 
         if (!PasswordUtils.CheckPassword(password, hashedPass))
-            return false;
+            return null;
 
-        return true;
+        Session session = om.CreateObject<Session>();
+        Span<byte> sessionId = stackalloc byte[16];
+        RandomNumberGenerator.Fill(sessionId);
+        session.SidHigh = MemoryMarshal.Read<long>(sessionId);
+		session.SidLow = MemoryMarshal.Read<long>(sessionId.Slice(8));
+
+        session.User = user;
+
+        return null;
     }
 
     private bool IsValidUsername(string username) => username.IsAlphanumeric();
 
     private static readonly Regex EmailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+
+
     private bool IsValidEMail(string email) => EmailRegex.IsMatch(email);
 
 }
