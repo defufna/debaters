@@ -26,7 +26,7 @@ public static class ObjectModelExtensions
 	{
 		HashIndexReader<Session, long, long> index = Session.GetSidIndex(om);
         session = null;
-        Span<byte> decoded = stackalloc byte[16];
+        Span<byte> decoded = new byte[16];
 
 		if(!Convert.TryFromBase64String(sessionId, decoded, out var bytesWritten) || bytesWritten != 16)
 			return false;
@@ -65,8 +65,5 @@ public static class ObjectModelExtensions
 		HashIndexReader<Vote, long, long> index = Vote.GetUsernameHashIndex(om);
 		return index.GetObject(userId, nodeId);
 	}
-
-
-
 
 }

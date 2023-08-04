@@ -7,19 +7,19 @@ namespace Debaters.API;
 public interface IDebateAPI
 {
     [DbAPIOperation]
-    DatabaseTask<ResultCode> CreateCommunity(string username, string communityName);
+    DatabaseTask<ResultCode> CreateCommunity(string sid, string communityName);
 
     [DbAPIOperation]
-    DatabaseTask<ResultCode> DeleteCommunity(string username, string communityName);
+    DatabaseTask<ResultCode> DeleteCommunity(string sid, string communityName);
 
     [DbAPIOperation(OperationType = DbAPIOperationType.Read)]
     DatabaseTask<List<PostDTO>> GetTopPosts();
 
     [DbAPIOperation]
-    DatabaseTask<SubmitPostResultDTO> SubmitPost(string username, string communityName, string title, string content);
+    DatabaseTask<SubmitPostResultDTO> SubmitPost(string sid, string communityName, string title, string content);
 
     [DbAPIOperation]
-    DatabaseTask<ResultCode> DeletePost(string username, long id);
+    DatabaseTask<ResultCode> DeletePost(string sid, long id);
 
     [DbAPIOperation(OperationType = DbAPIOperationType.Read)]
     DatabaseTask<GetCommentsResultDTO> GetComments(string? username, long postId);
@@ -28,14 +28,14 @@ public interface IDebateAPI
     DatabaseTask<GetCommentsResultDTO> GetCommentSubtree(string? username, long commentId, int maxDepth = -1);
 
     [DbAPIOperation]
-    DatabaseTask<SubmitCommentResultDTO> SubmitComment(string username, long parentId, string content);
+    DatabaseTask<SubmitCommentResultDTO> SubmitComment(string sid, long parentId, string content);
 
     [DbAPIOperation]
-    DatabaseTask UpdateComment(string username, long id, string content);
+    DatabaseTask UpdateComment(string sid, long id, string content);
 
     [DbAPIOperation]
-    DatabaseTask<ResultCode> DeleteComment(string username, long id);
+    DatabaseTask<ResultCode> DeleteComment(string sid, long id);
 
     [DbAPIOperation]
-    DatabaseTask<ResultCode> Vote(string username, long nodeId, bool upvote);
+    DatabaseTask<ResultCode> Vote(string sid, long nodeId, bool upvote);
 }

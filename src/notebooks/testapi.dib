@@ -1,0 +1,89 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"languageName":"csharp","name":"csharp"}]}}
+
+#!pwsh
+
+cd ../shared
+$env:Platform="x64"
+dotnet build
+
+#!csharp
+
+#r "../../bin/shared/shared.dll"
+#r "nuget:VeloxDB.Protocol, 0.2.3-dev"
+
+#!csharp
+
+#!import "Utils.cs"
+
+#!csharp
+
+await userApi.Register("defufna", "123456789123456789", "a@b.cx")
+
+#!csharp
+
+string sid = await userApi.Login("defufna", "123456789123456789");
+
+#!csharp
+
+var result = await api.SubmitPost(sid, "Test", "Test", "This is just a test");
+
+#!csharp
+
+await api.CreateCommunity(sid, "Test")
+
+#!markdown
+
+await api.GetTopPosts()
+
+#!csharp
+
+var users = RegisterUsers(10000, "mySalt");
+
+#!csharp
+
+var sids = Login(users);
+
+#!csharp
+
+public async Task<SubmitCommentResultDTO> CreateComment(long parent)
+{
+    var sid = Pick(sids);
+    var content = Pick(comments);
+    return await api.SubmitComment(sid, parent, content);
+}
+
+public async Task<bool> CreatePost(int commentNum)
+{
+    var sid = Pick(sids);
+    var text = Pick(comments);
+    var content = Pick(comments);
+    var result = await api.SubmitPost(sid, "Test", text, content);
+
+    if(result.Code != ResultCode.Success)
+        return false;
+
+    Stack<long> parents = new();
+    parents.Push(result.Id);
+
+    for(int i = 0; i < commentNum; i++)
+    {
+        var comment = await CreateComment(parents.Peek());
+        int next = random.Next(100);
+
+        if(next < Math.Max(0, 50 - (15*parents.Count)))
+        {
+            parents.Push(comment.Id);
+        }
+
+        if(next > 50 && parents.Count > 1)
+            parents.Pop();
+    }
+
+    return true;
+}
+
+#!csharp
+
+await CreatePost()

@@ -218,7 +218,7 @@ public class DebateAPI
 			return ResultCode.InvalidSession;
 		}
 
-		Comment? parent = om.GetObject<Comment>(parentId);
+		Node? parent = om.GetObject<Node>(parentId);
 
 		if(parent == null)
 		{
@@ -237,8 +237,9 @@ public class DebateAPI
 		comment.Author = session.User;
 		comment.Content = content;
 		comment.Posted = DateTime.UtcNow;
+        comment.Parent = parent;
 
-		return new SubmitCommentResultDTO(ResultCode.Success, comment.Id);
+        return new SubmitCommentResultDTO(ResultCode.Success, comment.Id);
 	}
 
 	[DbAPIOperation]

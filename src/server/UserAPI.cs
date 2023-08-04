@@ -23,10 +23,6 @@ public class UserAPI
         if (string.IsNullOrEmpty(username) || !IsValidUsername(username))
             return RegisterResult.InvalidUsername;
 
-        HashIndexReader<User, string> index = User.GetUsernameHashIndex(om);
-
-        User? checkUser = index.GetObject(username);
-
         if (om.UserExists(username))
         {
             return RegisterResult.AlreadyExists;
