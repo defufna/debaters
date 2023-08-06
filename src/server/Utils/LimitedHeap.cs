@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Debaters.Server.Utils;
@@ -36,13 +38,14 @@ internal class LimitedHeap<T> : IEnumerable<T>
 		}
 	}
 
-	public bool TryGetTop(out T? top)
+	public bool TryGetTop([NotNullWhen(true)] out T? top)
 	{
 		top = default(T);
 		if(Count == 0)
 			return false;
 
 		top = items[0];
+		Debug.Assert(top != null);
 		return true;
 	}
 

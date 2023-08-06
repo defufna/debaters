@@ -58,9 +58,23 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation(OperationType = DbAPIOperationType.Read)]
-	public List<PostDTO> GetTopPosts(ObjectModel om)
+	public List<PostDTO> GetTopPosts(ObjectModel om, string? sid)
 	{
-		throw new NotImplementedException();
+		bool loggedIn = sid != null && om.TryGetSession(sid, out var session);
+
+		LimitedHeap<PostDTO> topPosts = new LimitedHeap<PostDTO>(1000, (first, second) => (first.Upvotes - first.Downvotes) - (second.Upvotes - second.Downvotes));
+		foreach(Post post in om.GetAllObjects<Post>())
+		{
+			int score = post.Upvotes - post.Downvotes;
+			if(!topPosts.TryGetTop(out var top) || score >= (top.Upvotes - top.Downvotes))
+			{
+				topPosts.Add(post.ToDTO());
+			}
+
+			post.Abandon();
+		}
+
+		return new List<PostDTO>(topPosts);
 	}
 
 	[DbAPIOperation]
@@ -122,7 +136,8 @@ public class DebateAPI
 
 		if(loggedIn && !om.TryGetSession(sid!, out var session))
 		{
-			return ResultCode.InvalidSession;
+			loggedIn = false;
+			sid = null;
 		}
 
 		Post? post = om.GetObject<Post>(postId);

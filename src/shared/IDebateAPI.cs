@@ -13,7 +13,7 @@ public interface IDebateAPI
     DatabaseTask<ResultCode> DeleteCommunity(string sid, string communityName);
 
     [DbAPIOperation(OperationType = DbAPIOperationType.Read)]
-    DatabaseTask<List<PostDTO>> GetTopPosts();
+    DatabaseTask<List<PostDTO>> GetTopPosts(string? sid);
 
     [DbAPIOperation]
     DatabaseTask<SubmitPostResultDTO> SubmitPost(string sid, string communityName, string title, string content);
@@ -22,10 +22,10 @@ public interface IDebateAPI
     DatabaseTask<ResultCode> DeletePost(string sid, long id);
 
     [DbAPIOperation(OperationType = DbAPIOperationType.Read)]
-    DatabaseTask<GetCommentsResultDTO> GetComments(string? username, long postId);
+    DatabaseTask<GetCommentsResultDTO> GetComments(string? sid, long postId);
 
     [DbAPIOperation(OperationType = DbAPIOperationType.Read)]
-    DatabaseTask<GetCommentsResultDTO> GetCommentSubtree(string? username, long commentId, int maxDepth = -1);
+    DatabaseTask<GetCommentsResultDTO> GetCommentSubtree(string? sid, long commentId, int maxDepth = -1);
 
     [DbAPIOperation]
     DatabaseTask<SubmitCommentResultDTO> SubmitComment(string sid, long parentId, string content);

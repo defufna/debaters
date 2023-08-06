@@ -7,6 +7,7 @@ using Debaters.API;
 string connString = "address=localhost:7568";
 var api = ConnectionFactory.Get<IDebateAPI>(connString);
 var userApi = ConnectionFactory.Get<IUserAPI>(connString);
+List<string> sids = new();
 MD5 md5 = MD5.Create();
 
 string[] adjectives = new string[]
@@ -442,22 +443,15 @@ List<string> RegisterUsers(int count, string salt)
     for(int i = 0; i < count; i++)
     {
         var task = tasks[i];
-        try
+        if(task.GetResult() == RegisterResult.Success)
         {
-            if(task.GetResult() == RegisterResult.Success)
-            {
-                result.Add(usernames[i]);
-            }else if(task.GetResult() == RegisterResult.InvalidUsername)
-            {
-                Console.WriteLine(usernames[i]);
-            }
-        }
-        catch(VeloxDB.Protocol.DbAPIMismatchException e)
-        {            
-            exceptions++;
+            result.Add(usernames[i]);
+        }else if(task.GetResult() == RegisterResult.InvalidUsername)
+        {
+            Console.WriteLine(usernames[i]);
         }
     }
-    Console.WriteLine(exceptions);
+
     return result;
 }
 
@@ -473,11 +467,6 @@ List<string> Login(List<string> users)
 }
 
 string Pick(IReadOnlyList<string> list) => list[random.Next(list.Count)];
-
-void CreatePosts(List<string> sids, int count)
-{
-    
-}
 
 public async Task<SubmitCommentResultDTO> CreateComment(long parent)
 {

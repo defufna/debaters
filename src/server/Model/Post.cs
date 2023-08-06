@@ -1,10 +1,11 @@
 namespace Debaters.Server.Model;
 
+using Debaters.API;
 using VeloxDB.Descriptor;
 using VeloxDB.ObjectInterface;
 
 [DatabaseClass]
-public abstract class Post : Node
+public abstract partial class Post : Node
 {
 	[DatabaseProperty]
 	public abstract string Title { get; set; }
@@ -17,5 +18,7 @@ public abstract class Post : Node
 
 	[InverseReferences(nameof(Comment.Parent))]
 	public abstract InverseReferenceSet<Comment> Comments { get;  }
+
+	public partial PostDTO ToDTO();
 }
 

@@ -59,14 +59,14 @@ public class UserAPI
             return null;
 
         Session session = om.CreateObject<Session>();
-        Span<byte> sessionId = stackalloc byte[16];
+        Span<byte> sessionId = new byte[16];
         RandomNumberGenerator.Fill(sessionId);
         session.SidHigh = MemoryMarshal.Read<long>(sessionId);
 		session.SidLow = MemoryMarshal.Read<long>(sessionId.Slice(8));
 
         session.User = user;
 
-        return null;
+        return Convert.ToBase64String(sessionId);
     }
 
     private bool IsValidUsername(string username) => username.IsAlphanumeric();
