@@ -69,6 +69,17 @@ public class UserAPI
         return Convert.ToBase64String(sessionId);
     }
 
+    [DbAPIOperation]
+    public ResultCode LogOut(ObjectModel om, string sid)
+    {
+        if(sid == null || !om.TryGetSession(sid, out var session))
+            return ResultCode.InvalidSession;
+
+        session.Delete();
+        return ResultCode.Success;
+    }
+
+
     private bool IsValidUsername(string username) => username.IsAlphanumeric();
 
     private static readonly Regex EmailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");

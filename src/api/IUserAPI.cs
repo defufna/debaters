@@ -1,8 +1,12 @@
+using Debaters.API;
+using Microsoft.AspNetCore.Mvc;
+using VeloxDB.AspNet;
 using VeloxDB.Client;
 using VeloxDB.Protocol;
 
-namespace Debaters.API;
+namespace Debaters.WebAPI;
 
+[Forward(typeof(RouteAttribute), "/api/User/[action]")]
 [DbAPI(Name = "UserAPI")]
 public interface IUserAPI
 {

@@ -15,14 +15,14 @@ public static class ObjectModelExtensions
 		return TryGetUser(om, username, out _);
 	}
 
-	public static bool TryGetUser(this ObjectModel om, string username, [MaybeNullWhen(false)] out User? user)
+	public static bool TryGetUser(this ObjectModel om, string username, [NotNullWhen(true)] out User? user)
 	{
 		HashIndexReader<User, string> index = User.GetUsernameHashIndex(om);
 		user = index.GetObject(username.ToLower());
 		return user != null;
 	}
 
-	public static bool TryGetSession(this ObjectModel om, string sessionId, [MaybeNullWhen(false)] out Session? session)
+	public static bool TryGetSession(this ObjectModel om, string sessionId, [NotNullWhen(true)] out Session? session)
 	{
 		HashIndexReader<Session, long, long> index = Session.GetSidIndex(om);
         session = null;
