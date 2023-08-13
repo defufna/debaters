@@ -92,27 +92,33 @@ function buildTree(rootId, comments) {
 }
 
 class Comment extends Component{
-    render({ comment, depth }){
+    constructor(props) {
+        super(props);
+        this.state = { collapsed: false }
+        this.onCollapseClicked = this.onCollapseClicked.bind(this);
+    }
+
+    onCollapseClicked() {
+        const { collapsed } = this.state;
+        this.setState({collapsed:!collapsed})
+    }
+    render({ comment, depth }) {
+        let { collapsed = false } = this.state;
+        const hasChildren = typeof comment.children !== 'undefined';
+
         return html`
-            <div class="comment" style="padding-left:${depth*24}px">
+            <div class="comment" style="padding-left:${Math.min(depth, 1) * 24}px">
+                ${hasChildren && html`
+                <a href="#" onclick=${this.onCollapseClicked}>${collapsed ? "+" : "-"}</a>`}
                 <div>${comment.author}</div>
                 <div>${comment.content}</div>
+                ${hasChildren && !collapsed && html`
+                <div class="children">
+                    ${comment.children.map(c=>html`<${Comment} comment=${c} depth=${depth+1}/>`)}
+                </div>
+                `}
             </div>
         `;
-    }
-}
-
-function renderComments(comments, depth, result) {
-    for (let i = 0; i < comments.length; i++){
-        const comment = comments[i];
-
-        result.push(html`<${Comment} comment=${comment} depth=${depth} />`)
-
-        if (typeof comment.children === 'undefined')
-            continue;
-
-        renderComments(comment.children, depth + 1, result);
-
     }
 }
 
@@ -147,13 +153,10 @@ class CommentCollection extends Component {
             return html`<p class="error">${error}</p>`;
         }
 
-        const renderedComments = [];
-        renderComments(comments, 0, renderedComments);
-
         return html`
             <h1>${post.title}</h1>
             <p>${post.content}</p>
-            ${renderedComments}
+            ${comments.map(c=>html`<${Comment} comment=${c} depth=0/>`)}
         `;
     }
 }
