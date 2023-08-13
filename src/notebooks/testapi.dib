@@ -12,6 +12,7 @@ dotnet build
 
 #r "../../bin/shared/shared.dll"
 #r "nuget:VeloxDB.Protocol, 0.2.3-dev"
+#r "nuget:VeloxDB, 0.2.3-dev"
 
 #!csharp
 
@@ -37,13 +38,37 @@ var result = await api.SubmitPost(sid, "Test", "Test", "This is just a test");
 
 await api.CreateCommunity(sid, "Test")
 
-#!markdown
+#!csharp
 
-await api.GetTopPosts()
+await api.GetTopPosts(null)
+
+#!csharp
+
+var result = await api.GetComments(null, 1164180503675300073);
+
+#!csharp
+
+result.Comments.Where(c=>c.Parent != 1164180503675300073)
+
+#!csharp
+
+result.Comments[0].Id
+
+#!csharp
+
+await api.SubmitComment(sid, result.Comments[0].Id, "This is a test")
+
+#!csharp
+
+await api.GetCommentSubtree(null, 1157425104234220713)
 
 #!csharp
 
 var users = RegisterUsers(10000, "mySalt");
+
+#!csharp
+
+result.Comments.Any(c=>c.Parent != 1164180503675300073)
 
 #!csharp
 

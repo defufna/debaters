@@ -1,4 +1,5 @@
 using Debaters.WebAPI;
+using Microsoft.Extensions.FileProviders;
 using VeloxDB.AspNet.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,13 +20,20 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    Console.WriteLine(Path.GetFullPath("../www"));
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseFileServer(new FileServerOptions()
+    {
+        FileProvider = new PhysicalFileProvider(Path.GetFullPath("../www")),
+    });
+    app.UseRouting();
+    app.MapGet("/c/{*rest}", async (context) => await context.Response.SendFileAsync("../www/index.html"));
 }
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
 app.MapControllers();
 

@@ -8,7 +8,7 @@ public class CommentDTO
 	public long Parent { get; set; }
 
 	[AutomapperIgnore]
-	public string? AutorUsername { get; set; }
+	public string? Author { get; set; }
 
 	[AutomapperIgnore]
 	public VoteStatus MyVote { get; set; }

@@ -68,7 +68,7 @@ public class DebateAPI
 			int score = post.Upvotes - post.Downvotes;
 			if(!topPosts.TryGetTop(out var top) || score >= (top.Upvotes - top.Downvotes))
 			{
-				topPosts.Add(post.ToDTO());
+				topPosts.Add(post.ToDTO(includeContent:false));
 			}
 
 			post.Abandon();
@@ -129,6 +129,21 @@ public class DebateAPI
 
 	}
 
+	private IEnumerable<Comment> DepthFirst(IEnumerable<Comment> comments, int maxDepth)
+	{
+		foreach(var comment in comments)
+		{
+			yield return comment;
+			if(maxDepth != 0)
+			{
+				foreach(var inner in DepthFirst(comment.Comments, maxDepth - 1))
+				{
+					yield return inner;
+				}
+			}
+		}
+	}
+
 	[DbAPIOperation(OperationType = DbAPIOperationType.Read)]
 	public GetCommentsResultDTO GetComments(ObjectModel om, string? sid, long postId)
 	{
@@ -149,22 +164,9 @@ public class DebateAPI
 
 		LimitedHeap<Comment> topComments = new LimitedHeap<Comment>(maxComments, CompareTop);
 
-		Queue<(IEnumerable<Comment> comments, int depth)> queue = new();
-
-		queue.Enqueue((post.Comments, 0));
-
-		while (queue.Count > 0)
+		foreach(Comment comment in DepthFirst(post.Comments, maxDepth))
 		{
-			(IEnumerable<Comment> comments, int depth) = queue.Dequeue();
-
-			foreach(Comment comment in comments)
-			{
-				topComments.Add(comment);
-				if(depth + 1 < maxDepth)
-				{
-					queue.Enqueue((comment.Comments, depth + 1));
-				}
-			}
+			topComments.Add(comment);
 		}
 
 		HashSet<long> selected = new HashSet<long>(topComments.Count + 1);
@@ -181,7 +183,7 @@ public class DebateAPI
 			AddWithParents(om, comment, selected, result, loggedIn);
 		}
 
-		return new GetCommentsResultDTO(ResultCode.Success, result);
+		return new GetCommentsResultDTO(ResultCode.Success, result, post.ToDTO());
 	}
 
 	private void AddWithParents(ObjectModel om, Comment comment, HashSet<long> selected, List<CommentDTO> result, bool loggedIn)
@@ -191,7 +193,7 @@ public class DebateAPI
 		while(true)
 		{
 			CommentDTO dto = current.ToDTO();
-			dto.AutorUsername = current.Author.Username;
+			dto.Author = current.Author.Username;
 
 			if(loggedIn)
 			{

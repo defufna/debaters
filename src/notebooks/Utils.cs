@@ -470,6 +470,11 @@ string Pick(IReadOnlyList<string> list) => list[random.Next(list.Count)];
 
 public async Task<SubmitCommentResultDTO> CreateComment(long parent)
 {
+    if(sids.Count == 0)
+    {
+        throw new InvalidOperationException("No logged in users");
+    }
+    
     var sid = Pick(sids);
     var content = Pick(comments);
     return await api.SubmitComment(sid, parent, content);
@@ -493,7 +498,7 @@ public async Task<bool> CreatePost(int commentNum)
         var comment = await CreateComment(parents.Peek());
         int next = random.Next(100);
 
-        if(next < Math.Max(0, 50 - (15*parents.Count)))
+        if(next < Math.Max(0, 95 - (15*parents.Count)))
             parents.Push(comment.Id);
 
         if(next > 50 && parents.Count > 1)
