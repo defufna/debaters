@@ -62,6 +62,10 @@ function buildTree(rootId, comments) {
         const comment = comments[i];
         comment.score = comment.upvotes - comment.downvotes;
 
+        if (typeof comment.children === 'undefined') {
+            comment.children = []
+        }
+
         if (comment.parent === rootId) {
             result.push(comment);
         } else
@@ -83,7 +87,7 @@ function buildTree(rootId, comments) {
         current.sort((a, b) => b.score - a.score);
         for (let i = 0; i < current.length; i++){
             const child = current[i].children;
-            if (typeof child !== 'undefined' && child.length > 0)
+            if (child.length > 0)
                 queue.push(child)
         }
     }
@@ -102,19 +106,26 @@ class Comment extends Component{
         const { collapsed } = this.state;
         this.setState({collapsed:!collapsed})
     }
+
     render({ comment, depth }) {
         let { collapsed = false } = this.state;
-        const hasChildren = typeof comment.children !== 'undefined';
+        const hasChildren = comment.children.length > 0;
+        if (typeof depth === 'string') {
+            depth = Number(depth);
+        }
 
         return html`
             <div class="comment" style="padding-left:${Math.min(depth, 1) * 24}px">
-                ${hasChildren && html`
-                <a href="#" onclick=${this.onCollapseClicked}>${collapsed ? "+" : "-"}</a>`}
-                <div>${comment.author}</div>
-                <div>${comment.content}</div>
-                ${hasChildren && !collapsed && html`
-                <div class="children">
-                    ${comment.children.map(c=>html`<${Comment} comment=${c} depth=${depth+1}/>`)}
+                <a href="#" onclick=${this.onCollapseClicked}>${collapsed ? "+" : "-"}</a>
+                <div class="commentAuthor">${comment.author}</div>
+                ${!collapsed && html`
+                <div class="depth-${depth}">
+                    <div class="commentContent">${comment.content}</div>
+                    ${hasChildren && html`
+                    <div class="children">
+                        ${comment.children.map(c=>html`<${Comment} comment=${c} depth=${depth.valueOf()+1}/>`)}
+                    </div>
+                `}
                 </div>
                 `}
             </div>
@@ -123,7 +134,7 @@ class Comment extends Component{
 }
 
 class CommentCollection extends Component {
-    async componentDidMount(params) {
+    async componentDidMount() {
         let { community, id } = this.props;
         id = fromBase62(id);
 
@@ -145,7 +156,7 @@ class CommentCollection extends Component {
     render()
     {
         let { error = null, post = null, comments = null } = this.state;
-        console.log(this.state);
+
         if (post === null) {
             return;
         }
@@ -156,7 +167,7 @@ class CommentCollection extends Component {
         return html`
             <h1>${post.title}</h1>
             <p>${post.content}</p>
-            ${comments.map(c=>html`<${Comment} comment=${c} depth=0/>`)}
+            ${comments.map(c=>html`<${Comment} comment=${c} depth="0"/>`)}
         `;
     }
 }

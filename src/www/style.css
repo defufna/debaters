@@ -1,0 +1,35 @@
+.commentAuthor{
+    display: inline;
+    padding-left: 0.25em;
+}
+.commentContent{
+    margin: 0.5em;
+}
+
+.depth-0{
+    border-left: 2px blue solid;
+}
+
+.depth-1{
+    border-left: 2px red solid;
+}
+
+.depth-2{
+    border-left: 2px green solid;
+}
+
+.depth-3{
+    border-left: 2px yellow solid;
+}
+
+.depth-4{
+    border-left: 2px magenta solid;
+}
+
+.depth-5{
+    border-left: 2px cyan solid;
+}
+
+.depth-6{
+    border-left: 2px brown solid;
+}
