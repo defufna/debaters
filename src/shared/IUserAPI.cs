@@ -7,10 +7,10 @@ namespace Debaters.API;
 public interface IUserAPI
 {
     [DbAPIOperation]
-    DatabaseTask<string?> Login(string username, string password);
+    DatabaseTask<string?> Login(string? username, string? password);
 
     [DbAPIOperation]
-    DatabaseTask<RegisterResult> Register(string username, string password, string email);
+    DatabaseTask<RegisterResult> Register(string? username, string? password, string? email);
 
     [DbAPIOperation]
     DatabaseTask<ResultCode> LogOut(string sid);

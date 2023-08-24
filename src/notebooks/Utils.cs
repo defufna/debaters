@@ -7,7 +7,6 @@ using Debaters.API;
 string connString = "address=localhost:7568";
 var api = ConnectionFactory.Get<IDebateAPI>(connString);
 var userApi = ConnectionFactory.Get<IUserAPI>(connString);
-List<string> sids = new();
 MD5 md5 = MD5.Create();
 
 string[] adjectives = new string[]
@@ -482,6 +481,10 @@ public async Task<SubmitCommentResultDTO> CreateComment(long parent)
 
 public async Task<bool> CreatePost(int commentNum)
 {
+    if(sids.Count == 0)
+        throw new InvalidOperationException("no sids");
+    if (comments.Length == 0)
+        throw new InvalidOperationException("no comments");
     var sid = Pick(sids);
     var text = Pick(comments);
     var content = Pick(comments);

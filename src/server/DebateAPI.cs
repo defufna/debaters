@@ -260,7 +260,7 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation]
-	public void UpdateComment(ObjectModel om, string username, long id, string content)
+	public ResultCode UpdateComment(ObjectModel om, string username, long id, string content)
 	{
 		throw new NotImplementedException();
 	}

@@ -31,7 +31,7 @@ public interface IDebateAPI
     DatabaseTask<SubmitCommentResultDTO> SubmitComment(string sid, long parentId, string content);
 
     [DbAPIOperation]
-    DatabaseTask UpdateComment(string sid, long id, string content);
+    DatabaseTask<ResultCode> UpdateComment(string sid, long id, string content);
 
     [DbAPIOperation]
     DatabaseTask<ResultCode> DeleteComment(string sid, long id);
