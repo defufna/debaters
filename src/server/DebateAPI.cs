@@ -58,12 +58,21 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation(OperationType = DbAPIOperationType.Read)]
-	public List<PostDTO> GetTopPosts(ObjectModel om, string? sid)
+	public GetPostsResultDTO GetTopPosts(ObjectModel om, string? sid, string? communityName = null)
 	{
 		bool loggedIn = sid != null && om.TryGetSession(sid, out var session);
+		Community? community = null;
+
+		if(!string.IsNullOrEmpty(communityName) && !om.TryGetCommunity(communityName, out community))
+		{
+			return ResultCode.InvalidCommunity;
+		}
 
 		LimitedHeap<PostDTO> topPosts = new LimitedHeap<PostDTO>(1000, (first, second) => (first.Upvotes - first.Downvotes) - (second.Upvotes - second.Downvotes));
-		foreach(Post post in om.GetAllObjects<Post>())
+
+		IEnumerable<Post> posts = (community == null) ? om.GetAllObjects<Post>() : community.Posts;
+
+		foreach(Post post in posts)
 		{
 			int score = post.Upvotes - post.Downvotes;
 			if(!topPosts.TryGetTop(out var top) || score >= (top.Upvotes - top.Downvotes))
@@ -74,7 +83,7 @@ public class DebateAPI
 			post.Abandon();
 		}
 
-		return new List<PostDTO>(topPosts);
+		return new GetPostsResultDTO(ResultCode.Success, new List<PostDTO>(topPosts), communityName);
 	}
 
 	[DbAPIOperation]

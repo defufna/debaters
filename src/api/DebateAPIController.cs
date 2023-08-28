@@ -33,10 +33,10 @@ public class DebateAPIController : ControllerBase
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpGet]
-	public async Task<List<API.PostDTO>> GetTopPosts()
+	public async Task<GetPostsResultDTO> GetTopPosts(string? communityName = null)
 	{
 		string? sid = Request.Cookies["sid"];
-		return await api.GetTopPosts(sid);
+		return await api.GetTopPosts(sid, communityName);
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpPost]

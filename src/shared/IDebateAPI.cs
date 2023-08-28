@@ -13,7 +13,7 @@ public interface IDebateAPI
     DatabaseTask<ResultCode> DeleteCommunity(string sid, string communityName);
 
     [DbAPIOperation(OperationType = DbAPIOperationType.Read)]
-    DatabaseTask<List<PostDTO>> GetTopPosts(string? sid);
+    DatabaseTask<GetPostsResultDTO> GetTopPosts(string? sid, string? communityName = null);
 
     [DbAPIOperation]
     DatabaseTask<SubmitPostResultDTO> SubmitPost(string sid, string communityName, string title, string content);

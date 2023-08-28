@@ -14,18 +14,31 @@ class Post extends Component{
     }
 }
 
-function prepare(data) {
-    for (let i = 0; i < data.length; i++) {
-        data[i].id = toBase62(BigInt(data[i].id));
+function prepare(data) {  
+    for (let i = 0; i < data.posts.length; i++) {
+        data.posts[i].id = toBase62(BigInt(data.posts[i].id));
     }
-    return data;
+    return data.posts;
 }
 
 class PostCollection extends Component{
     componentDidMount() {
-        fetch('/api/Debate/GetTopPosts')
+        let { community = null } = this.props;
+        let url = (community === null) ? "/api/Debate/GetTopPosts" : `/api/Debate/GetTopPosts?communityName=${community}`;
+        fetch(url)
           .then(response => response.json())
-          .then(data => this.setState({ posts: prepare(data) }))
+            .then(data => {
+                if (data.code === 0) {
+                    this.setState({ posts: prepare(data) })
+                }
+                else {
+                    if (data.code === 4) {
+                        this.setState({ error: `Error fetching data, invalid community "${community}"` });
+                    } else {
+                        this.setState({ error: `Error fetching data` });
+                    }
+                }
+            })
             .catch(error => {
                 const msg = 'Error fetching data';
                 console.error(msg, ": ", error)
@@ -142,7 +155,7 @@ class CommentCollection extends Component {
             const response = await fetch(`/api/Debate/GetComments?postId=${id}`);
             const data = await response.json();
 
-            if (data.code === 0) {
+            if (data.code === 0 && data.post.community.toLowerCase() === community.toLowerCase()) {
                 this.setState({ comments: buildTree(data.post.id, data.comments), post: data.post });
             } else {
                 this.setState({ error: "Error fetching data." });
@@ -157,11 +170,12 @@ class CommentCollection extends Component {
     {
         let { error = null, post = null, comments = null } = this.state;
 
+        if (error !== null) {
+            return html`<p class="error">${error}</p>`;
+        }
+
         if (post === null) {
             return;
-        }
-        if(error !== null){
-            return html`<p class="error">${error}</p>`;
         }
 
         return html`
@@ -176,6 +190,7 @@ export function App () {
     <a href="/">Home</a>
     <${Router}>
         <${PostCollection} path="/"/>
+        <${PostCollection} path="/c/:community/"/>
         <${CommentCollection} path="/c/:community/:id"/>
     <//>`;
 }
