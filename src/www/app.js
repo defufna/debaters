@@ -1,6 +1,7 @@
-import { html, Component } from 'https://esm.sh/htm/preact';
-import { Router } from 'https://esm.sh/preact-router';
-import { toBase62, fromBase62 } from '/utils.js';
+import { Component } from 'preact';
+import { html } from 'htm/preact';
+import { Router } from 'preact-router';
+import { toBase62, fromBase62 } from './utils.js';
 
 class Post extends Component{
     render({ post })

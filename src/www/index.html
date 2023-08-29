@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Debate.rs</title>
     <script type="module">
-        import { render, html } from 'https://esm.sh/htm/preact'
+        import { render } from 'preact'
+		import { html } from 'htm/preact';
         import { App } from "/app.js";
 
         render(html`<${App}/>`, document.body);
