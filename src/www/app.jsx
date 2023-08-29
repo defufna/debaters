@@ -1,21 +1,21 @@
-import { Component } from 'preact';
-import { html } from 'htm/preact';
+import { Component, render } from 'preact';
 import { Router } from 'preact-router';
 import { toBase62, fromBase62 } from './utils.js';
 
 class Post extends Component{
     render({ post })
     {
-        return html`
+        return (
             <p>
-                ${post.upvotes - post.downvotes}
-                <a href="/c/${post.community}/${post.id}">${post.title}</a>
-                <a href="/c/${post.community}/">${post.community}</a>
-            </p>`;
+                {post.upvotes - post.downvotes}
+                <a href={`/c/${post.community}/${post.id}`}>{post.title}</a>
+                <a href={`/c/${post.community}/`}>{post.community}</a>
+            </p>
+        );
     }
 }
 
-function prepare(data) {  
+function prepare(data) {
     for (let i = 0; i < data.posts.length; i++) {
         data.posts[i].id = toBase62(BigInt(data.posts[i].id));
     }
@@ -50,16 +50,16 @@ class PostCollection extends Component{
     render({ }, { posts = [], error = null }) {
 
         if(error !== null){
-            return html`<p class="error">${error}</p>`;
+            return (<p class="error">{error}</p>);
         }
 
-        return html`
+        return (
         <div>
             <h1>Top Posts</h1>
-            ${posts.map(post => (
-                html`<${Post} post=${post}/>`
+            {posts.map(post => (
+                (<Post post={post}/>)
             ))}
-        </div>`;
+        </div>);
     }
 }
 
@@ -128,22 +128,22 @@ class Comment extends Component{
             depth = Number(depth);
         }
 
-        return html`
-            <div class="comment" style="padding-left:${Math.min(depth, 1) * 24}px">
-                <a href="#" onclick=${this.onCollapseClicked}>${collapsed ? "+" : "-"}</a>
-                <div class="commentAuthor">${comment.author}</div>
-                ${!collapsed && html`
-                <div class="depth-${depth}">
-                    <div class="commentContent">${comment.content}</div>
-                    ${hasChildren && html`
+        return (
+            <div class="comment" style={`padding-left:${Math.min(depth, 1) * 24}px`}>
+                <a href="#" onclick={this.onCollapseClicked}>{collapsed ? "+" : "-"}</a>
+                <div class="commentAuthor">{comment.author}</div>
+                {!collapsed && 
+                <div class={`depth-${depth}`}>
+                    <div class="commentContent">{comment.content}</div>
+                    {hasChildren && 
                     <div class="children">
-                        ${comment.children.map(c=>html`<${Comment} comment=${c} depth=${depth.valueOf()+1}/>`)}
+                        {comment.children.map(c=><Comment comment={c} depth={depth.valueOf()+1}/>)}
                     </div>
-                `}
+                }
                 </div>
-                `}
+                }
             </div>
-        `;
+        );
     }
 }
 
@@ -172,26 +172,33 @@ class CommentCollection extends Component {
         let { error = null, post = null, comments = null } = this.state;
 
         if (error !== null) {
-            return html`<p class="error">${error}</p>`;
+            return <p class="error">{error}</p>;
         }
 
         if (post === null) {
             return;
         }
 
-        return html`
-            <h1>${post.title}</h1>
-            <p>${post.content}</p>
-            ${comments.map(c=>html`<${Comment} comment=${c} depth="0"/>`)}
-        `;
+        return (
+            <div>
+                <h1>{post.title}</h1>
+                <p>{post.content}</p>
+                {comments.map(c => <Comment comment={c} depth="0" />)}
+            </div>
+        );
     }
 }
 export function App () {
-    return html`
-    <a href="/">Home</a>
-    <${Router}>
-        <${PostCollection} path="/"/>
-        <${PostCollection} path="/c/:community/"/>
-        <${CommentCollection} path="/c/:community/:id"/>
-    <//>`;
+    return (
+        <div>
+            <a href="/">Home</a>
+            <Router>
+                <PostCollection path="/" />
+                <PostCollection path="/c/:community/" />
+                <CommentCollection path="/c/:community/:id" />
+            </Router>;
+        </div>
+    );
 }
+
+render(<App/>, document.body);
