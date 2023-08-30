@@ -24,19 +24,29 @@ function prepare(data) {
 
 class PostCollection extends Component{
     componentDidMount() {
+        this.fetchData();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.community !== this.props.community) {
+            this.fetchData();
+        }
+    }
+
+    fetchData() {
         let { community = null } = this.props;
         let url = (community === null) ? "/api/Debate/GetTopPosts" : `/api/Debate/GetTopPosts?communityName=${community}`;
         fetch(url)
           .then(response => response.json())
             .then(data => {
                 if (data.code === 0) {
-                    this.setState({ posts: prepare(data) })
+                    this.setState({ posts: prepare(data), error:null })
                 }
                 else {
                     if (data.code === 4) {
-                        this.setState({ error: `Error fetching data, invalid community "${community}"` });
+                        this.setState({ error: `Error fetching data, invalid community "${community}"`, data:null });
                     } else {
-                        this.setState({ error: `Error fetching data` });
+                        this.setState({ error: `Error fetching data`, data:null });
                     }
                 }
             })
@@ -47,15 +57,16 @@ class PostCollection extends Component{
             });
     }
 
-    render({ }, { posts = [], error = null }) {
-
+    render({ community=null }, { posts = [], error = null }) {
         if(error !== null){
             return (<p class="error">{error}</p>);
         }
 
+        let heading = (community === null) ? "Top Posts" : community;
+
         return (
         <div>
-            <h1>Top Posts</h1>
+            <h1>{heading}</h1>
             {posts.map(post => (
                 (<Post post={post}/>)
             ))}
@@ -188,6 +199,7 @@ class CommentCollection extends Component {
         );
     }
 }
+
 export function App () {
     return (
         <div>
@@ -196,7 +208,7 @@ export function App () {
                 <PostCollection path="/" />
                 <PostCollection path="/c/:community/" />
                 <CommentCollection path="/c/:community/:id" />
-            </Router>;
+            </Router>
         </div>
     );
 }
