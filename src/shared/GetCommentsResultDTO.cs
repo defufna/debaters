@@ -2,9 +2,8 @@ using System.Diagnostics;
 
 namespace Debaters.API;
 
-public class GetCommentsResultDTO
+public class GetCommentsResultDTO : LoggedInResultDTO
 {
-	public ResultCode Code { get; set; }
 	public List<CommentDTO>? Comments { get; set; }
 
 	public PostDTO? Post { get; set; }
@@ -13,9 +12,10 @@ public class GetCommentsResultDTO
 	{
 	}
 
-	public GetCommentsResultDTO(ResultCode code, List<CommentDTO>? comments, PostDTO? post)
+	public GetCommentsResultDTO(ResultCode code, UserDTO? user, List<CommentDTO>? comments, PostDTO? post)
 	{
 		Code = code;
+		User = user;
 		Comments = comments;
 		Post = post;
 	}
@@ -23,6 +23,6 @@ public class GetCommentsResultDTO
 	public static implicit operator GetCommentsResultDTO(ResultCode code)
     {
 		Debug.Assert(code != ResultCode.Success, "You must provide comments if the result is success");
-		return new GetCommentsResultDTO(code, null, null);
+		return new GetCommentsResultDTO(code, null, null, null);
     }
 }

@@ -2,10 +2,8 @@ using System.Diagnostics;
 
 namespace Debaters.API;
 
-public class GetPostsResultDTO
+public class GetPostsResultDTO : LoggedInResultDTO
 {
-
-    public ResultCode Code { get; set; }
 	public List<PostDTO>? Posts { get; set; }
 	public string? Community { get; set; }
 
@@ -14,9 +12,10 @@ public class GetPostsResultDTO
 
     }
 
-    public GetPostsResultDTO(ResultCode code, List<PostDTO>? posts, string? community)
+    public GetPostsResultDTO(ResultCode code, UserDTO? user, List<PostDTO>? posts, string? community)
     {
         Code = code;
+        User = user;
         Posts = posts;
         Community = community;
     }
@@ -24,6 +23,6 @@ public class GetPostsResultDTO
 	public static implicit operator GetPostsResultDTO(ResultCode code)
     {
 		Debug.Assert(code != ResultCode.Success, "You must provide posts if the result is success");
-		return new GetPostsResultDTO(code, null, null);
+		return new GetPostsResultDTO(code, null, null, null);
     }
 }

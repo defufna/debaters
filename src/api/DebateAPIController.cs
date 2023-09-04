@@ -15,28 +15,40 @@ public class DebateAPIController : ControllerBase
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpPost]
-	public async Task<API.ResultCode> CreateCommunity(string communityName)
+	public async Task<API.OperationResultDTO> CreateCommunity(string communityName)
 	{
 		string? sid = Request.Cookies["sid"];
 		if (string.IsNullOrEmpty(sid))
+		{
+			Response.SetStatus(ResultCode.InvalidSession);
 			return ResultCode.InvalidSession;
-		return await api.CreateCommunity(sid, communityName);
+		}
+		var result = await api.CreateCommunity(sid, communityName);
+		Response.SetStatus(result);
+		return result;
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpPost]
-	public async Task<API.ResultCode> DeleteCommunity(string communityName)
+	public async Task<API.OperationResultDTO> DeleteCommunity(string communityName)
 	{
 		string? sid = Request.Cookies["sid"];
 		if (string.IsNullOrEmpty(sid))
+		{
+			Response.SetStatus(ResultCode.InvalidSession);
 			return ResultCode.InvalidSession;
-		return await api.DeleteCommunity(sid, communityName);
+		}
+		var result = await api.DeleteCommunity(sid, communityName);
+		Response.SetStatus(result);
+		return result;
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpGet]
 	public async Task<GetPostsResultDTO> GetTopPosts(string? communityName = null)
 	{
 		string? sid = Request.Cookies["sid"];
-		return await api.GetTopPosts(sid, communityName);
+		var result = await api.GetTopPosts(sid, communityName);
+		Response.SetStatus(result);
+		return result;
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpPost]
@@ -44,77 +56,108 @@ public class DebateAPIController : ControllerBase
 	{
 		string? sid = Request.Cookies["sid"];
 		if (string.IsNullOrEmpty(sid))
+		{
+			Response.SetStatus(ResultCode.InvalidSession);
 			return ResultCode.InvalidSession;
+		}
 
-		return await api.SubmitPost(sid, communityName, title, content);
+		var result = await api.SubmitPost(sid, communityName, title, content);
+		Response.SetStatus(result);
+		return result;
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpPost]
-	public async Task<API.ResultCode> DeletePost(long id)
+	public async Task<API.OperationResultDTO> DeletePost(long id)
 	{
 		string? sid = Request.Cookies["sid"];
 		if (string.IsNullOrEmpty(sid))
+		{
+			Response.SetStatus(ResultCode.InvalidSession);
 			return ResultCode.InvalidSession;
+		}
 
-		return await api.DeletePost(sid, id);
+		var result = await api.DeletePost(sid, id);
+		Response.SetStatus(result);
+		return result;
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpGet]
 	public async Task<API.GetCommentsResultDTO> GetComments(long postId)
 	{
 		string? sid = Request.Cookies["sid"];
-		return await api.GetComments(sid, postId);
+		var result = await api.GetComments(sid, postId);
+		Response.SetStatus(result);
+		return result;
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpGet]
 	public async Task<API.GetCommentsResultDTO> GetCommentSubtree(long commentId, int maxDepth)
 	{
 		string? sid = Request.Cookies["sid"];
-		return await api.GetCommentSubtree(sid, commentId, maxDepth);
+		var result = await api.GetCommentSubtree(sid, commentId, maxDepth);
+		Response.SetStatus(result);
+		return result;
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpPost]
 	public async Task<API.SubmitCommentResultDTO> SubmitComment(long parentId, string content)
 	{
 		string? sid = Request.Cookies["sid"];
-
 		if (string.IsNullOrEmpty(sid))
+		{
+			Response.SetStatus(ResultCode.InvalidSession);
 			return ResultCode.InvalidSession;
+		}
 
-		return await api.SubmitComment(sid, parentId, content);
+		var result = await api.SubmitComment(sid, parentId, content);
+		Response.SetStatus(result);
+		return result;
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpPost]
-	public async Task<API.ResultCode> UpdateComment(long id, string content)
+	public async Task<API.OperationResultDTO> UpdateComment(long id, string content)
+	{
+		string? sid = Request.Cookies["sid"];
+		if (string.IsNullOrEmpty(sid))
+		{
+			Response.SetStatus(ResultCode.InvalidSession);
+			return ResultCode.InvalidSession;
+		}
+
+		var result = await api.UpdateComment(sid, id, content);
+		Response.SetStatus(result);
+		return result;
+	}
+
+	[Microsoft.AspNetCore.Mvc.HttpPost]
+	public async Task<API.OperationResultDTO> DeleteComment(long id)
 	{
 		string? sid = Request.Cookies["sid"];
 
 		if (string.IsNullOrEmpty(sid))
+		{
+			Response.SetStatus(ResultCode.InvalidSession);
 			return ResultCode.InvalidSession;
+		}
 
-		return await api.UpdateComment(sid, id, content);
+		var result = await api.DeleteComment(sid, id);
+		Response.SetStatus(result);
+		return result;
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpPost]
-	public async Task<API.ResultCode> DeleteComment(long id)
+	public async Task<API.OperationResultDTO> Vote(long nodeId, bool upvote)
 	{
 		string? sid = Request.Cookies["sid"];
 
 		if (string.IsNullOrEmpty(sid))
+		{
+			Response.SetStatus(ResultCode.InvalidSession);
 			return ResultCode.InvalidSession;
+		}
 
-		return await api.DeleteComment(sid, id);
+		var result = await api.Vote(sid, nodeId, upvote);
+		Response.SetStatus(result);
+		return result;
 	}
-
-	[Microsoft.AspNetCore.Mvc.HttpPost]
-	public async Task<API.ResultCode> Vote(long nodeId, bool upvote)
-	{
-		string? sid = Request.Cookies["sid"];
-
-		if (string.IsNullOrEmpty(sid))
-			return ResultCode.InvalidSession;
-
-		return await api.Vote(sid, nodeId, upvote);
-	}
-
 }

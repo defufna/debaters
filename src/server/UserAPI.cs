@@ -14,18 +14,18 @@ namespace Debaters.Server;
 public class UserAPI
 {
     [DbAPIOperation]
-    public RegisterResult Register(ObjectModel om, string username, string password, string email)
+    public OperationResultDTO Register(ObjectModel om, string username, string password, string email)
     {
         if (string.IsNullOrEmpty(password) || !PasswordUtils.CheckStrength(password))
-            return RegisterResult.InvalidPassword;
+            return ResultCode.InvalidPassword;
         if (string.IsNullOrEmpty(email) || !IsValidEMail(email))
-            return RegisterResult.InvalidEmail;
+            return ResultCode.InvalidEmail;
         if (string.IsNullOrEmpty(username) || !IsValidUsername(username))
-            return RegisterResult.InvalidUsername;
+            return ResultCode.InvalidUsername;
 
         if (om.UserExists(username))
         {
-            return RegisterResult.AlreadyExists;
+            return ResultCode.AlreadyExists;
         }
 
         byte[] hash = PasswordUtils.HashPassword(password);
@@ -38,7 +38,7 @@ public class UserAPI
         user.EMail = email;
         user.Password = DatabaseArray<byte>.Create(hash);
 
-        return RegisterResult.Success;
+        return ResultCode.Success;
     }
 
     [DbAPIOperation]
@@ -70,7 +70,7 @@ public class UserAPI
     }
 
     [DbAPIOperation]
-    public ResultCode LogOut(ObjectModel om, string sid)
+    public OperationResultDTO LogOut(ObjectModel om, string sid)
     {
         if(sid == null || !om.TryGetSession(sid, out var session))
             return ResultCode.InvalidSession;
@@ -78,13 +78,8 @@ public class UserAPI
         session.Delete();
         return ResultCode.Success;
     }
-
-
-    private bool IsValidUsername(string username) => username.IsAlphanumeric();
-
+    private static bool IsValidUsername(string username) => username.IsAlphanumeric();
     private static readonly Regex EmailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-
-
-    private bool IsValidEMail(string email) => EmailRegex.IsMatch(email);
+    private static bool IsValidEMail(string email) => EmailRegex.IsMatch(email);
 
 }

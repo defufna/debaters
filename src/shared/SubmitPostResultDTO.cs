@@ -2,9 +2,8 @@ using System.Diagnostics;
 
 namespace Debaters.API;
 
-public class SubmitPostResultDTO
+public class SubmitPostResultDTO : OperationResultDTO
 {
-	public ResultCode Code { get; set; }
 	public long Id { get; set; }
 
 	public SubmitPostResultDTO()

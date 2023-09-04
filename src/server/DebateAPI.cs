@@ -16,7 +16,7 @@ public class DebateAPI
 	private const int maxDepth = 3;
 
 	[DbAPIOperation]
-	public ResultCode CreateCommunity(ObjectModel om, string sid, string communityName)
+	public OperationResultDTO CreateCommunity(ObjectModel om, string sid, string communityName)
 	{
 		if(string.IsNullOrEmpty(sid) || !om.TryGetSession(sid, out var session))
 		{
@@ -40,7 +40,7 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation]
-	public ResultCode DeleteCommunity(ObjectModel om, string sid, string communityName)
+	public OperationResultDTO DeleteCommunity(ObjectModel om, string sid, string communityName)
 	{
 		if(string.IsNullOrEmpty(sid) || !om.TryGetSession(sid, out var session))
 		{
@@ -60,7 +60,9 @@ public class DebateAPI
 	[DbAPIOperation(OperationType = DbAPIOperationType.Read)]
 	public GetPostsResultDTO GetTopPosts(ObjectModel om, string? sid, string? communityName = null)
 	{
-		bool loggedIn = sid != null && om.TryGetSession(sid, out var session);
+		Session? session = null;
+		bool loggedIn = sid != null && om.TryGetSession(sid, out session);
+
 		Community? community = null;
 
 		if(!string.IsNullOrEmpty(communityName) && !om.TryGetCommunity(communityName, out community))
@@ -83,7 +85,14 @@ public class DebateAPI
 			post.Abandon();
 		}
 
-		return new GetPostsResultDTO(ResultCode.Success, new List<PostDTO>(topPosts), communityName);
+		UserDTO? userDTO = null;
+		if(loggedIn)
+		{
+			Debug.Assert(session != null);
+			userDTO = session.User.ToDTO();
+		}
+
+		return new GetPostsResultDTO(ResultCode.Success, userDTO, new List<PostDTO>(topPosts), communityName);
 	}
 
 	[DbAPIOperation]
@@ -120,7 +129,7 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation]
-	public ResultCode DeletePost(ObjectModel om, string sid, long id)
+	public OperationResultDTO DeletePost(ObjectModel om, string sid, long id)
 	{
 		if(string.IsNullOrEmpty(sid) || !om.TryGetSession(sid, out var session))
 		{
@@ -156,13 +165,8 @@ public class DebateAPI
 	[DbAPIOperation(OperationType = DbAPIOperationType.Read)]
 	public GetCommentsResultDTO GetComments(ObjectModel om, string? sid, long postId)
 	{
-		bool loggedIn = sid != null;
-
-		if(loggedIn && !om.TryGetSession(sid!, out var session))
-		{
-			loggedIn = false;
-			sid = null;
-		}
+		Session? session = null;
+		bool loggedIn = sid != null && !om.TryGetSession(sid!, out session);
 
 		Post? post = om.GetObject<Post>(postId);
 
@@ -192,10 +196,10 @@ public class DebateAPI
 			AddWithParents(om, comment, selected, result, loggedIn);
 		}
 
-		return new GetCommentsResultDTO(ResultCode.Success, result, post.ToDTO());
+		return new GetCommentsResultDTO(ResultCode.Success, session?.User.ToDTO(), result, post.ToDTO());
 	}
 
-	private void AddWithParents(ObjectModel om, Comment comment, HashSet<long> selected, List<CommentDTO> result, bool loggedIn)
+	private static void AddWithParents(ObjectModel om, Comment comment, HashSet<long> selected, List<CommentDTO> result, bool loggedIn)
 	{
 		Comment current = comment;
 
@@ -269,19 +273,19 @@ public class DebateAPI
 	}
 
 	[DbAPIOperation]
-	public ResultCode UpdateComment(ObjectModel om, string username, long id, string content)
+	public OperationResultDTO UpdateComment(ObjectModel om, string username, long id, string content)
 	{
 		throw new NotImplementedException();
 	}
 
 	[DbAPIOperation]
-	public ResultCode DeleteComment(ObjectModel om, string username, long id)
+	public OperationResultDTO DeleteComment(ObjectModel om, string username, long id)
 	{
 		throw new NotImplementedException();
 	}
 
 	[DbAPIOperation]
-	public ResultCode Vote(ObjectModel om, string sid, long nodeId, bool upvote)
+	public OperationResultDTO Vote(ObjectModel om, string sid, long nodeId, bool upvote)
 	{
 		if(string.IsNullOrEmpty(sid) || !om.TryGetSession(sid, out var session))
 		{

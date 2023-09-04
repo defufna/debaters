@@ -10,8 +10,8 @@ public interface IUserAPI
     DatabaseTask<string?> Login(string? username, string? password);
 
     [DbAPIOperation]
-    DatabaseTask<RegisterResult> Register(string? username, string? password, string? email);
+    DatabaseTask<OperationResultDTO> Register(string? username, string? password, string? email);
 
     [DbAPIOperation]
-    DatabaseTask<ResultCode> LogOut(string sid);
+    DatabaseTask<OperationResultDTO> LogOut(string sid);
 }

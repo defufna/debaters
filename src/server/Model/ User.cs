@@ -1,5 +1,7 @@
 namespace Debaters.Server.Model;
 
+using System;
+using Debaters.API;
 using VeloxDB.ObjectInterface;
 
 [DatabaseClass]
@@ -24,5 +26,10 @@ public abstract class User : DatabaseObject
 	{
 		return om.GetHashIndex<User, string>(UsernameHashIndex);
 	}
+
+    public UserDTO? ToDTO()
+    {
+		return new UserDTO(Username);
+    }
 }
 

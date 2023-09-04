@@ -1,4 +1,5 @@
-﻿using Debaters.API;
+﻿using System.Net;
+using Debaters.API;
 using Microsoft.AspNetCore.Mvc;
 using VeloxDB.AspNet;
 
@@ -16,34 +17,47 @@ public class UserAPIController : ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<bool> Login([FromBody]LoginCredentials credentials)
+	public async Task<UserDTO?> Login([FromBody]LoginCredentials credentials)
 	{
 		string? sid = await api.Login(credentials.Username, credentials.Password);
 		if(sid != null)
 		{
-			Response.Cookies.Append("sid", sid, new CookieOptions() 
-			{ 
+			Response.Cookies.Append("sid", sid, new CookieOptions()
+			{
 				HttpOnly = true,
 				Expires = DateTime.UtcNow.Add(sessionExpire),
 				SameSite = SameSiteMode.Strict
 			});
 		}
-		return sid != null;
+		if(sid != null)
+		{
+			return new UserDTO(credentials.Username!);
+		}
+		else
+		{
+			Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+			return null;
+		}
 	}
 
 	[HttpPost]
-	public async Task<API.RegisterResult> Register([FromBody] RegisterData registerData)
+	public async Task<API.OperationResultDTO> Register([FromBody] RegisterData registerData)
 	{
-		return await api.Register(registerData.Username, registerData.Password, registerData.EMail);
+		var result = await api.Register(registerData.Username, registerData.Password, registerData.EMail);
+		Response.SetStatus(result);
+		return result;
 	}
 
 	[HttpPost]
-	public async Task<API.ResultCode> LogOut()
+	public async Task<API.OperationResultDTO> LogOut()
 	{
 		string? sid = Request.Cookies["sid"];
 		if (string.IsNullOrEmpty(sid))
 			return API.ResultCode.UnknownError;
-		return await api.LogOut(sid);
+
+		var result = await api.LogOut(sid);
+		Response.SetStatus(result);
+		return result;
 	}
 
 }
