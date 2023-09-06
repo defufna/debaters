@@ -15,7 +15,6 @@ export function App() {
                 <PostCollection path="/" fetch={fetchWrapper} />
                 <PostCollection path="/c/:community/" fetch={fetchWrapper} />
                 <CommentCollection path="/c/:community/:id" fetch={fetchWrapper} />
-                <LoginForm path="/login" />
             </Router>
         </div>
     );

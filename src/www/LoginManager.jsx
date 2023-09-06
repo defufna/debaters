@@ -16,7 +16,21 @@ const ResultCode = {
     InvalidUsername: 12,
     AlreadyExists: 13,
     DoesNotExist: 14,
-}
+};
+
+const ResultCodeMessages = [
+    "Success", "Unknown Error", "Invalid Session", "Invalid username",
+    "Invalid community", "Invalid title, title should be longer than 10 characters",
+    "Invalid content, content should be at least 10 characters long",
+    "Invalid post",
+    "Invalid parent",
+    "Invalid comment or post",
+    "Your password is too weak. Please make it longer. You can include a mix of uppercase letters, lowercase letters, special characters, or numbers for added security",
+    "Invalid email address",
+    "Your username is invalid. Please use only letters and numbers in your username",
+    "Already exists",
+    "Does not exist"
+];
 
 var user = null;
 
@@ -59,7 +73,7 @@ export function logout() {
 }
 
 export function login(username, password) {
-    return fetch("/api/User/Login", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({ username: username, password: password }) })
+    return fetch("/api/User/Login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: username, password: password }) })
         .then((response) => {
             if (response.ok) {
                 updateUser({ username: username });
@@ -68,6 +82,22 @@ export function login(username, password) {
             else {
                 return false;
             }
+        });
+}
+
+export function register(username, password, email) {
+    return fetch("/api/User/Register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: username, password: password, eMail: email })
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            return ({
+                success: data.code === ResultCode.Success,
+                code: data.code,
+                message: ResultCodeMessages[data.code]
+            })
         });
 }
 

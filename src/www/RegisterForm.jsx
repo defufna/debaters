@@ -1,13 +1,12 @@
-import { login } from './LoginManager.jsx';
 import { Form } from './Form.jsx';
+import { register } from './LoginManager.jsx';
 
-export function LoginForm() {
+
+export function RegisterForm({ onDone = (r) => { } }) {
     const handleSubmit = (formData) => {
-        login(formData.username, formData.password).then(res => {
-            if (res) {
-
-            }
-        }).catch(error => console.log(error));
+        register(formData.username, formData.password, formData.email).then((result) => {
+            onDone(result);
+        })
     };
 
     return (
@@ -30,7 +29,15 @@ export function LoginForm() {
                         required />
                 </div>
                 <div>
-                    <button type="submit">Login</button>
+                    <label htmlFor="email">Email:</label>
+                    <input
+                        type="text"
+                        id="email"
+                        name="email"
+                        required />
+                </div>
+                <div>
+                    <button type="submit">Register</button>
                 </div>
             </Form>
         </div>
