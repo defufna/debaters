@@ -21,7 +21,7 @@ export class Comment extends Component {
 
         return (
             <div class="comment" style={`padding-left:${Math.min(depth, 1) * 24}px`}>
-                <a href="#" onclick={this.onCollapseClicked}>{collapsed ? "+" : "-"}</a>
+                <a href="#" onClick={this.onCollapseClicked}>{collapsed ? "+" : "-"}</a>
                 <div class="commentAuthor">{comment.author}</div>
                 {!collapsed &&
                     <div class={`depth-${depth}`}>

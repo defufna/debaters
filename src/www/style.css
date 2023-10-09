@@ -33,3 +33,67 @@
 .depth-6{
     border-left: 2px brown solid;
 }
+
+.post{
+    padding-bottom: 1em;
+    padding-top: 1em;
+    padding-left: 0.5em;
+    margin: 0.25em;
+    background-color: #FAFAFA; /* Raise your voice! */
+    display: grid;
+    grid-template-areas: 
+        "vote title"
+        "vote community";
+    grid-template-columns: max-content auto;
+}
+
+.votetitle{
+    align-self: end;
+}
+
+.post:hover{
+    background-color: #EEEEEE;
+    cursor: pointer;
+}
+
+.post span{
+    padding: 0.5em;
+}
+
+.votebox {
+    grid-area: vote;
+    display: grid;
+    grid-template-areas: 
+        "up votes"
+        "down votes";
+}
+
+.votebox a{
+    text-decoration: none;
+    font-size: 1.5em;
+    line-height: 0.75em;
+    color: inherit;
+}
+
+
+.votebox span{
+    grid-area: votes;
+    font-size: 1.5em;
+}
+
+.votebox .up {
+    grid-area: up;
+    align-self: end;
+}
+
+.votebox .up:hover{
+    color: rgb(0, 255, 0);
+}
+
+.votebox .down {
+    grid-area: down;
+}
+
+.votebox .down:hover{
+    color:red;
+}
