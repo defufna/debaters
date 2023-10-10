@@ -51,7 +51,7 @@ export class PostCollection extends Component {
         let heading = (community === null) ? "Top Posts" : community;
 
         return (
-            <div>
+            <div class="posts">
                 <h1>{heading}</h1>
                 {posts.map(post => (
                     (<Post post={post} />)

@@ -9,7 +9,7 @@ export function Post({ post }) {
     }
     return (
         <div class="post" onClick={()=>route(postUrl)}>
-            <div class="votebox"><a class="up" href="#" onClick={(ev)=>vote(ev, true)}>▲</a> <a class="down" href="#" onClick={(ev)=>vote(ev, false)}>▼</a><span>{post.upvotes - post.downvotes}</span></div>
+            <div class="votebox"><button class="up" onClick={(ev)=>vote(ev, true)}>▲</button> <button class="down" onClick={(ev)=>vote(ev, false)}>▼</button><span>{post.upvotes - post.downvotes}</span></div>
             <div class="votetitle"><a href={postUrl}>{post.title}</a></div>
             <div class="votecommunity"><a href={`/c/${post.community}/`}>{post.community}</a></div>
         </div>

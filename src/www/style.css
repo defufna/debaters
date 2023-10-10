@@ -34,6 +34,15 @@
     border-left: 2px brown solid;
 }
 
+.posts{
+    display: grid;
+    grid-template-columns: min-content max-content auto;
+}
+
+.posts h1{
+    grid-column: 1/4;
+}
+
 .post{
     padding-bottom: 1em;
     padding-top: 1em;
@@ -42,9 +51,10 @@
     background-color: #FAFAFA; /* Raise your voice! */
     display: grid;
     grid-template-areas: 
-        "vote title"
-        "vote community";
-    grid-template-columns: max-content auto;
+        "vote vote title"
+        "vote vote community";
+    grid-template-columns: subgrid;
+    grid-column: 1/4;
 }
 
 .votetitle{
@@ -66,19 +76,27 @@
     grid-template-areas: 
         "up votes"
         "down votes";
+    grid-template-columns: subgrid;
 }
 
-.votebox a{
-    text-decoration: none;
-    font-size: 1.5em;
-    line-height: 0.75em;
+.votebox button{
+    font-size: 2em;
     color: inherit;
+    padding:0;
+    background: none;
+    margin: 0;
+    border: #DADADA 1px solid;
+    cursor: pointer;
+}
+
+.votebox button:hover{
+    background-color: #DADADA;
 }
 
 
 .votebox span{
     grid-area: votes;
-    font-size: 1.5em;
+    font-size: 2em;
 }
 
 .votebox .up {
@@ -92,6 +110,7 @@
 
 .votebox .down {
     grid-area: down;
+    align-self: start;
 }
 
 .votebox .down:hover{
