@@ -12,8 +12,9 @@ internal class LimitedHeap<T> : IEnumerable<T>
 	Comparison<T> comparison;
 
 	public int Count {get; private set;}
+	public bool IsFull => Count == maxElements;
 
-	public LimitedHeap(int maxElements, Comparison<T> comparison)
+    public LimitedHeap(int maxElements, Comparison<T> comparison)
 	{
 		this.maxElements = maxElements;
 		items = new T[maxElements];

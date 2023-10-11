@@ -77,7 +77,8 @@ public class DebateAPI
 		foreach(Post post in posts)
 		{
 			int score = post.Upvotes - post.Downvotes;
-			if(!topPosts.TryGetTop(out var top) || score >= (top.Upvotes - top.Downvotes))
+			topPosts.TryGetTop(out var top);
+			if(!topPosts.IsFull || score >= (top!.Upvotes - top.Downvotes))
 			{
 				topPosts.Add(post.ToDTO(includeContent:false));
 			}
@@ -89,6 +90,12 @@ public class DebateAPI
 		if(loggedIn)
 		{
 			Debug.Assert(session != null);
+
+			foreach(var postDTO in topPosts)
+			{
+				postDTO.Upvoted = om.GetVoteStatus(session.User.Id, postDTO.Id);
+			}
+
 			userDTO = session.User.ToDTO();
 		}
 
@@ -308,9 +315,35 @@ public class DebateAPI
 			vote = om.CreateObject<Vote>();
 			vote.User = session.User;
 			vote.Node = node;
+
+		}
+		else // if user has already voted, cancel the existing vote
+		{
+			if(vote.Upvote)
+			{
+				node.Upvotes -= 1;
+			}else
+			{
+				node.Downvotes -= 1;
+			}
+
+			if (vote.Upvote == upvote)
+			{
+				vote.Delete();
+				return ResultCode.Success;
+			}
 		}
 
 		vote.Upvote = upvote;
+
+		if(upvote)
+		{
+			node.Upvotes += 1;
+		}else
+		{
+			node.Downvotes += 1;
+		}
+
 		return ResultCode.Success;
 	}
 }

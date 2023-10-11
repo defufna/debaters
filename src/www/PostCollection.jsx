@@ -6,6 +6,8 @@ function prepare(data) {
     for (let i = 0; i < data.posts.length; i++) {
         data.posts[i].id = toBase62(BigInt(data.posts[i].id));
     }
+
+    data.posts.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));
     return data.posts;
 }
 
@@ -43,7 +45,7 @@ export class PostCollection extends Component {
             });
     }
 
-    render({ community = null }, { posts = [], error = null }) {
+    render({ community = null, fetch }, { posts = [], error = null }) {
         if (error !== null) {
             return (<p class="error">{error}</p>);
         }
@@ -54,7 +56,7 @@ export class PostCollection extends Component {
             <div class="posts">
                 <h1>{heading}</h1>
                 {posts.map(post => (
-                    (<Post post={post} />)
+                    (<Post post={post} fetch={fetch} />)
                 ))}
             </div>);
     }

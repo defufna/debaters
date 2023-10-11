@@ -70,6 +70,15 @@
     padding: 0.5em;
 }
 
+.up.voted{
+    color: rgb(0, 255, 0);
+}
+
+.down.voted{
+    color: red;
+}
+
+
 .votebox {
     grid-area: vote;
     display: grid;
@@ -81,7 +90,6 @@
 
 .votebox button{
     font-size: 2em;
-    color: inherit;
     padding:0;
     background: none;
     margin: 0;
