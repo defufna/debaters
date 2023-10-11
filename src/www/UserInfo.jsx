@@ -18,6 +18,7 @@ export class UserInfo extends Component {
 		this.showLogin = this.showLogin.bind(this);
 		this.showRegister = this.showRegister.bind(this);
 		this.registerDone = this.registerDone.bind(this);
+		this.loginDone = this.loginDone.bind(this);
 
 		addLoginListener(this.loginChanged);
 	}
@@ -48,6 +49,12 @@ export class UserInfo extends Component {
 		this.setState(state);
 	}
 
+	loginDone(result) {
+		if (!result) {
+			this.setState({ message: "Sorry, but it seems your username or password is incorrect. Please recheck your login credentials and give it another shot." });
+		}
+	}
+
 	logoutClicked() {
 		logout();
 	}
@@ -59,7 +66,7 @@ export class UserInfo extends Component {
 					{message && <span>{message}</span>}
 					<a href="#" onClick={this.showRegister}>Register</a>
 					<a href="#" onClick={this.showLogin}>Log in</a>
-					{state === LoginVisible && <LoginForm />}
+					{state === LoginVisible && <LoginForm onDone={this.loginDone} />}
 					{state === RegisterVisible && <RegisterForm onDone={this.registerDone}/>}
 				</div>
 			);
