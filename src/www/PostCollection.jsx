@@ -4,7 +4,7 @@ import { toBase62 } from './utils.js';
 
 function prepare(data) {
     for (let i = 0; i < data.posts.length; i++) {
-        data.posts[i].id = toBase62(BigInt(data.posts[i].id));
+        data.posts[i].id62 = toBase62(BigInt(data.posts[i].id));
     }
 
     data.posts.sort((a, b) => (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes));

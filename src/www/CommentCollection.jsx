@@ -50,12 +50,11 @@ function buildTree(rootId, comments) {
 
 export class CommentCollection extends Component {
     async componentDidMount() {
-        let { community, id } = this.props;
+        let { community, id, fetch } = this.props;
         id = fromBase62(id);
 
         try {
-            const response = await fetch(`/api/Debate/GetComments?postId=${id}`);
-            const data = await response.json();
+            const data = await fetch(`/api/Debate/GetComments?postId=${id}`);
 
             if (data.code === 0 && data.post.community.toLowerCase() === community.toLowerCase()) {
                 this.setState({ comments: buildTree(data.post.id, data.comments), post: data.post });
@@ -67,7 +66,7 @@ export class CommentCollection extends Component {
         }
     }
 
-    render() {
+    render({fetch}) {
         let { error = null, post = null, comments = null } = this.state;
 
         if (error !== null) {
@@ -82,7 +81,7 @@ export class CommentCollection extends Component {
             <div>
                 <h1>{post.title}</h1>
                 <p>{post.content}</p>
-                {comments.map(c => <Comment comment={c} depth="0" />)}
+                {comments.map(c => <Comment comment={c} depth="0" fetch={fetch} />)}
             </div>
         );
     }

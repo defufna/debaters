@@ -160,4 +160,20 @@ public class DebateAPIController : ControllerBase
 		Response.SetStatus(result);
 		return result;
 	}
+
+	[Microsoft.AspNetCore.Mvc.HttpPost]
+	public async Task<API.OperationResultDTO> RemoveVote(long nodeId)
+	{
+		string? sid = Request.Cookies["sid"];
+
+		if (string.IsNullOrEmpty(sid))
+		{
+			Response.SetStatus(ResultCode.InvalidSession);
+			return ResultCode.InvalidSession;
+		}
+
+		var result = await api.RemoveVote(sid, nodeId);
+		Response.SetStatus(result);
+		return result;
+	}
 }

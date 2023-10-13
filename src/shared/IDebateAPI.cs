@@ -38,4 +38,7 @@ public interface IDebateAPI
 
     [DbAPIOperation]
     DatabaseTask<OperationResultDTO> Vote(string sid, long nodeId, bool upvote);
+
+    [DbAPIOperation]
+    DatabaseTask<OperationResultDTO> RemoveVote(string sid, long nodeId);
 }

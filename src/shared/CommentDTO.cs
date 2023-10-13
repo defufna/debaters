@@ -11,7 +11,7 @@ public class CommentDTO
 	public string? Author { get; set; }
 
 	[AutomapperIgnore]
-	public VoteStatus MyVote { get; set; }
+	public VoteStatus Upvoted { get; set; }
 
 	public int Upvotes { get; set; }
 	public int Downvotes { get; set; }

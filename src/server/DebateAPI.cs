@@ -173,7 +173,8 @@ public class DebateAPI
 	public GetCommentsResultDTO GetComments(ObjectModel om, string? sid, long postId)
 	{
 		Session? session = null;
-		bool loggedIn = sid != null && !om.TryGetSession(sid!, out session);
+		if(sid != null)
+			om.TryGetSession(sid, out session);
 
 		Post? post = om.GetObject<Post>(postId);
 
@@ -200,13 +201,13 @@ public class DebateAPI
 
 		foreach(Comment comment in topComments)
 		{
-			AddWithParents(om, comment, selected, result, loggedIn);
+			AddWithParents(om, comment, selected, result, session);
 		}
 
 		return new GetCommentsResultDTO(ResultCode.Success, session?.User.ToDTO(), result, post.ToDTO());
 	}
 
-	private static void AddWithParents(ObjectModel om, Comment comment, HashSet<long> selected, List<CommentDTO> result, bool loggedIn)
+	private static void AddWithParents(ObjectModel om, Comment comment, HashSet<long> selected, List<CommentDTO> result, Session? session)
 	{
 		Comment current = comment;
 
@@ -215,9 +216,9 @@ public class DebateAPI
 			CommentDTO dto = current.ToDTO();
 			dto.Author = current.Author.Username;
 
-			if(loggedIn)
+			if(session != null)
 			{
-				dto.MyVote = om.GetVoteStatus(current.Author.Id, current.Id);
+				dto.Upvoted = om.GetVoteStatus(session.User.Id, current.Id);
 			}
 
 			result.Add(dto);
@@ -326,12 +327,6 @@ public class DebateAPI
 			{
 				node.Downvotes -= 1;
 			}
-
-			if (vote.Upvote == upvote)
-			{
-				vote.Delete();
-				return ResultCode.Success;
-			}
 		}
 
 		vote.Upvote = upvote;
@@ -344,6 +339,32 @@ public class DebateAPI
 			node.Downvotes += 1;
 		}
 
+		return ResultCode.Success;
+	}
+
+	[DbAPIOperation]
+	public OperationResultDTO RemoveVote(ObjectModel om, string sid, long nodeId)
+	{
+		if(string.IsNullOrEmpty(sid) || !om.TryGetSession(sid, out var session))
+		{
+			return ResultCode.InvalidSession;
+		}
+		Vote? vote = om.GetVote(session.User.Id, nodeId);
+
+		if (vote == null)
+			return ResultCode.DoesNotExist;
+
+		Node node = vote.Node;
+
+		if(vote.Upvote)
+		{
+			node.Upvotes -= 1;
+		}else
+		{
+			node.Downvotes -= 1;
+		}
+
+		vote.Delete();
 		return ResultCode.Success;
 	}
 }

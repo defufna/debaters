@@ -78,8 +78,15 @@
     color: red;
 }
 
+.votebox .up:hover{
+    color: rgb(0, 255, 0);
+}
 
-.votebox {
+.votebox .down:hover{
+    color:red;
+}
+
+.post .votebox {
     grid-area: vote;
     display: grid;
     grid-template-areas: 
@@ -88,39 +95,44 @@
     grid-template-columns: subgrid;
 }
 
-.votebox button{
+.votebox button {
+    background: none;
+    border: #DADADA 1px solid;
+}
+
+.comment .votebox{
+    display: inline-flex;
+}
+
+.comment .votebox .down{
+    order:3;
+}
+
+.post .votebox button{
     font-size: 2em;
     padding:0;
-    background: none;
+    
     margin: 0;
     border: #DADADA 1px solid;
     cursor: pointer;
 }
 
-.votebox button:hover{
+.post .votebox button:hover{
     background-color: #DADADA;
 }
 
 
-.votebox span{
+.post .votebox span{
     grid-area: votes;
     font-size: 2em;
 }
 
-.votebox .up {
+.post .votebox .up {
     grid-area: up;
     align-self: end;
 }
 
-.votebox .up:hover{
-    color: rgb(0, 255, 0);
-}
-
-.votebox .down {
+.post .votebox .down {
     grid-area: down;
     align-self: start;
-}
-
-.votebox .down:hover{
-    color:red;
 }
