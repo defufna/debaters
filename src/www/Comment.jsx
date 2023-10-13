@@ -25,14 +25,13 @@ export class Comment extends Component {
                 <a href="#" onClick={this.onCollapseClicked}>{collapsed ? "+" : "-"}</a>
                 <VoteBox fetch={fetch} node={comment}></VoteBox>
                 <div class="commentAuthor">{comment.author}</div>
-                {!collapsed &&
-                    <div class={`depth-${depth}`}>
+                    <div class={`depth-${depth} ${collapsed?"collapsed":""}`}>
                         <div class="commentContent">{comment.content}</div>
                         {hasChildren &&
                             <div class="children">
                                 {comment.children.map(c => <Comment comment={c} depth={depth.valueOf() + 1} fetch={fetch} />)}
                             </div>}
-                    </div>}
+                    </div>
             </div>
         );
     }

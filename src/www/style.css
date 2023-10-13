@@ -21,6 +21,7 @@ h1 {
     padding: 0.25em;
     color: inherit;
 }
+
 main{
     margin-top: 3em;
     margin-left: 0.25em;
@@ -39,6 +40,10 @@ main{
 }
 .commentContent{
     margin: 0.5em;
+}
+
+.collapsed {
+    display:none;
 }
 
 .depth-0{
