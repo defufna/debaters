@@ -34,44 +34,8 @@ main{
     gap: 0.25em;
 }
 
-.commentAuthor{
-    display: inline;
-    padding-left: 0.25em;
-}
-.commentContent{
-    margin: 0.5em;
-}
-
 .collapsed {
     display:none;
-}
-
-.depth-0{
-    border-left: 2px blue solid;
-}
-
-.depth-1{
-    border-left: 2px red solid;
-}
-
-.depth-2{
-    border-left: 2px green solid;
-}
-
-.depth-3{
-    border-left: 2px yellow solid;
-}
-
-.depth-4{
-    border-left: 2px magenta solid;
-}
-
-.depth-5{
-    border-left: 2px cyan solid;
-}
-
-.depth-6{
-    border-left: 2px brown solid;
 }
 
 .posts{
@@ -145,8 +109,52 @@ main{
     border: #DADADA 1px solid;
 }
 
+.comment {
+    display: grid;
+    grid-template-columns: min-content auto;
+}
+
+.comment-author{
+    display: inline;
+    padding-left: 0.25em;
+}
+
+.comment-container{
+    grid-column: 2;
+    grid-row: 2;
+}
+.comment-content{
+    margin: 0.5em;
+}
+.comment-header{
+    grid-column: 2;
+    grid-row: 1;
+}
+.collapse-button{
+    border: none;
+    background: inherit;
+    cursor: pointer;
+    grid-column: 1;
+    grid-row: 1;
+}
+
 .comment .votebox{
     display: inline-flex;
+
+}
+
+.collapse-bar{
+    width: 2px;
+    padding: 0;
+    grid-column: 1;
+    grid-row: 2;
+    cursor: pointer;
+    background-color: inherit;
+    border:none;
+    justify-self: center;
+}
+.collapse-bar:hover{
+    width: 50%;
 }
 
 .comment .votebox .down{
@@ -156,7 +164,6 @@ main{
 .post .votebox button{
     font-size: 2em;
     padding:0;
-    
     margin: 0;
     border: #DADADA 1px solid;
     cursor: pointer;
@@ -180,4 +187,32 @@ main{
 .post .votebox .down {
     grid-area: down;
     align-self: start;
+}
+
+.depth-0{
+    background-color: blue;
+}
+
+.depth-1{
+    background-color: red;
+}
+
+.depth-2{
+    background-color: green;
+}
+
+.depth-3{
+    background-color: yellow;
+}
+
+.depth-4{
+    background-color: magenta;
+}
+
+.depth-5{
+    background-color: cyan;
+}
+
+.depth-6{
+    background-color: brown;
 }

@@ -22,11 +22,14 @@ export class Comment extends Component {
 
         return (
             <div class="comment" style={`padding-left:${Math.min(depth, 1) * 24}px`}>
-                <a href="#" onClick={this.onCollapseClicked}>{collapsed ? "+" : "-"}</a>
-                <VoteBox fetch={fetch} node={comment}></VoteBox>
-                <div class="commentAuthor">{comment.author}</div>
-                    <div class={`depth-${depth} ${collapsed?"collapsed":""}`}>
-                        <div class="commentContent">{comment.content}</div>
+                <button class="collapse-button" onClick={this.onCollapseClicked}>{collapsed ? "+" : "-"}</button>
+                <div class="comment-header">
+                    {!collapsed && <VoteBox fetch={fetch} node={comment}></VoteBox>}
+                    <div class="comment-author">{comment.author}</div>
+                </div>
+                {!collapsed && <button class={`depth-${depth} collapse-bar`} onClick={this.onCollapseClicked} />}
+                    <div class={`${collapsed?"collapsed":""} comment-container`}>
+                        <div class="comment-content">{comment.content}</div>
                         {hasChildren &&
                             <div class="children">
                                 {comment.children.map(c => <Comment comment={c} depth={depth.valueOf() + 1} fetch={fetch} />)}
