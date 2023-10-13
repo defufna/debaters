@@ -78,7 +78,7 @@ export class CommentCollection extends Component {
         }
 
         return (
-            <div>
+            <div class="comments">
                 <h1>{post.title}</h1>
                 <p>{post.content}</p>
                 {comments.map(c => <Comment comment={c} depth="0" fetch={fetch} />)}

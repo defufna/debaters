@@ -62,7 +62,7 @@ export class UserInfo extends Component {
 	render({}, { user, state, message }) {
 		if (user === null) {
 			return (
-				<div>
+				<div id="userinfo">
 					{message && <span>{message}</span>}
 					<a href="#" onClick={this.showRegister}>Register</a>
 					<a href="#" onClick={this.showLogin}>Log in</a>
@@ -72,7 +72,7 @@ export class UserInfo extends Component {
 			);
 		} else {
 			return (
-				<div>
+				<div id="userinfo">
 					<span>{user.username}</span>
 					<a href="#" onClick={this.logoutClicked}>Logout</a>
 				</div>

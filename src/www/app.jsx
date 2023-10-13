@@ -9,13 +9,17 @@ import { LoginForm } from './LoginForm.jsx';
 export function App() {
     return (
         <div>
-            <a href="/">Home</a>
-            <UserInfo />
+            <header>
+                <a id="logo" href="/">Debate.rs</a>
+                <UserInfo />
+            </header>
+            <main>
             <Router>
                 <PostCollection path="/" fetch={fetchWrapper} />
                 <PostCollection path="/c/:community/" fetch={fetchWrapper} />
                 <CommentCollection path="/c/:community/:id" fetch={fetchWrapper} />
-            </Router>
+                </Router>
+            </main>
         </div>
     );
 }
