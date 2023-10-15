@@ -1,7 +1,7 @@
 import { login } from './LoginManager.jsx';
 import { Form } from './Form.jsx';
 
-export function LoginForm({ onDone = (r) => { } }) {
+export function LoginForm({ onDone = (r) => { }, onCancel = () => { } } ) {
     const handleSubmit = (formData) => {
         login(formData.username, formData.password).then(res => {
             onDone(res);
@@ -9,28 +9,27 @@ export function LoginForm({ onDone = (r) => { } }) {
     };
 
     return (
-        <div>
-            <Form onSubmit={handleSubmit}>
-                <div>
+        <div class="overlay">
+            <div class="dialog">
+                <Form onSubmit={handleSubmit}>
                     <label htmlFor="username">Username:</label>
                     <input
                         type="text"
                         id="username"
                         name="username"
                         required />
-                </div>
-                <div>
                     <label htmlFor="password">Password:</label>
                     <input
                         type="password"
                         id="password"
                         name="password"
                         required />
-                </div>
-                <div>
-                    <button type="submit">Login</button>
-                </div>
-            </Form>
+                    <div class="form-bottom-row">
+                        <button type="submit">Login</button>
+                        <button onClick={onCancel}>Cancel</button>
+                    </div>
+                </Form>
+            </div>
         </div>
     );
 }

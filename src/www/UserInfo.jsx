@@ -17,6 +17,7 @@ export class UserInfo extends Component {
 		this.logoutClicked = this.logoutClicked.bind(this);
 		this.showLogin = this.showLogin.bind(this);
 		this.showRegister = this.showRegister.bind(this);
+		this.hideAll = this.hideAll.bind(this);
 		this.registerDone = this.registerDone.bind(this);
 		this.loginDone = this.loginDone.bind(this);
 
@@ -29,6 +30,10 @@ export class UserInfo extends Component {
 
 	showRegister() {
 		this.setState({ state: RegisterVisible });
+	}
+
+	hideAll() {
+		this.setState({ state: Initial });
 	}
 
 	registerDone(result) {
@@ -64,17 +69,17 @@ export class UserInfo extends Component {
 			return (
 				<div id="userinfo">
 					{message && <span>{message}</span>}
-					<a href="#" onClick={this.showRegister}>Register</a>
-					<a href="#" onClick={this.showLogin}>Log in</a>
-					{state === LoginVisible && <LoginForm onDone={this.loginDone} />}
-					{state === RegisterVisible && <RegisterForm onDone={this.registerDone}/>}
+					<button onClick={this.showRegister}>Register</button>
+					<button href="#" onClick={this.showLogin}>Log in</button>
+					{state === LoginVisible && <LoginForm onDone={this.loginDone} onCancel={this.hideAll} />}
+					{state === RegisterVisible && <RegisterForm onDone={this.registerDone} onCancel={this.hideAll}/>}
 				</div>
 			);
 		} else {
 			return (
 				<div id="userinfo">
 					<span>{user.username}</span>
-					<a href="#" onClick={this.logoutClicked}>Logout</a>
+					<button onClick={this.logoutClicked}>Logout</button>
 				</div>
 			);
 		}

@@ -34,6 +34,56 @@ main{
     gap: 0.25em;
 }
 
+#userinfo form{
+    display: grid;
+    gap: 0.1em;
+    grid-template-columns: min-content auto;
+}
+
+#userinfo form label{
+    grid-column: 1;
+}
+
+#userinfo form input{
+    grid-column: 2;
+}
+
+#userinfo form .form-bottom-row{
+    grid-column: 1/3;
+    text-align: center;
+}
+
+#userinfo form .form-bottom-row button{
+    margin: 0.25em;
+}
+
+.overlay {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 999;
+}
+
+.dialog {
+    /* position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); */
+    background: white;
+    padding: 1em;
+    padding-bottom: 0.5em;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-width: 80%;
+  }
+
 .collapsed {
     display:none;
 }
