@@ -80,6 +80,7 @@ export class CommentCollection extends Component {
         return (
             <div class="comments">
                 <h1>{post.title}</h1>
+                <p><a href={`/c/${post.community}`}>{post.community}</a></p>
                 <p>{post.content}</p>
                 {comments.map(c => <Comment comment={c} depth="0" fetch={fetch} />)}
             </div>

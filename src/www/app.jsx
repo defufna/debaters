@@ -14,6 +14,7 @@ export function App() {
                 <UserInfo />
             </header>
             <main>
+
             <Router>
                 <PostCollection path="/" fetch={fetchWrapper} />
                 <PostCollection path="/c/:community/" fetch={fetchWrapper} />

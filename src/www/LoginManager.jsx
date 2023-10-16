@@ -1,6 +1,6 @@
 const callbacks = [];
 
-const ResultCode = {
+export const ResultCode = {
     Success: 0,
     UnknownError: 1,
     InvalidSession: 2,
@@ -33,6 +33,8 @@ const ResultCodeMessages = [
 ];
 
 var user = null;
+
+export const isLoggedIn = () => user !== null;
 
 export function fetchWrapper(url, options) {
     let promise = fetch(url, options).then((response) => response.json());

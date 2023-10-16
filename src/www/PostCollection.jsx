@@ -1,6 +1,9 @@
 import { Component } from 'preact';
 import { Post } from './Post.jsx';
 import { toBase62 } from './utils.js';
+import { route } from 'preact-router';
+import { SubmitPost } from './SubmitPost.jsx';
+import { isLoggedIn } from './LoginManager.jsx';
 
 function prepare(data) {
     for (let i = 0; i < data.posts.length; i++) {
@@ -45,16 +48,26 @@ export class PostCollection extends Component {
             });
     }
 
-    render({ community = null, fetch }, { posts = [], error = null }) {
+    render({ community = null, fetch, submit }, { posts = [], error = null }) {
         if (error !== null) {
             return (<p class="error">{error}</p>);
         }
+
+        submit = submit === "";
 
         let heading = (community === null) ? "Top Posts" : community;
 
         return (
             <div class="posts">
                 <h1>{heading}</h1>
+                {community !== null && isLoggedIn() &&
+                    <div class="spanall">
+                        <button onClick={()=>route(`/c/${community}?submit`)}>Submit Post</button>
+                    </div>
+                }
+                {submit &&
+                    <SubmitPost community={community} fetch={fetch} />
+                }
                 {posts.map(post => (
                     (<Post post={post} fetch={fetch} />)
                 ))}

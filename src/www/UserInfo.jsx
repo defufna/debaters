@@ -64,7 +64,7 @@ export class UserInfo extends Component {
 		logout();
 	}
 
-	render({}, { user, state, message }) {
+	render({ }, { user, state, message }) {
 		if (user === null) {
 			return (
 				<div id="userinfo">
