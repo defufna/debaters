@@ -101,6 +101,17 @@ form .form-bottom-row button{
     margin-top:0.5em;
     position: static;
 }
+.submit-comment form{
+    display:flex;
+    flex-direction: column;
+    margin-right: 5px;
+}
+.submit-comment form span{
+    align-self: flex-start;
+}
+.submit-comment form textarea{
+    height: 10em;
+}
 
 .post{
     padding-bottom: 1em;

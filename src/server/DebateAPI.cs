@@ -204,7 +204,11 @@ public class DebateAPI
 			AddWithParents(om, comment, selected, result, session);
 		}
 
-		return new GetCommentsResultDTO(ResultCode.Success, session?.User.ToDTO(), result, post.ToDTO());
+		PostDTO postDTO = post.ToDTO();
+		if (session != null)
+			postDTO.Upvoted = om.GetVoteStatus(session.User.Id, post.Id);
+
+		return new GetCommentsResultDTO(ResultCode.Success, session?.User.ToDTO(), result, postDTO);
 	}
 
 	private static void AddWithParents(ObjectModel om, Comment comment, HashSet<long> selected, List<CommentDTO> result, Session? session)

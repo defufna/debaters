@@ -11,9 +11,7 @@ export function SubmitPost({ community, fetch }) {
             body: JSON.stringify(content)
         })
 
-        
         if (data.code === ResultCode.Success) {
-            console.log(data.id);
             route(`/c/${community}/${toBase62(BigInt(data.id))}`)
         }
     }

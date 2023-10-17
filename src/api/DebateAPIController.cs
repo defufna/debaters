@@ -100,7 +100,7 @@ public class DebateAPIController : ControllerBase
 	}
 
 	[Microsoft.AspNetCore.Mvc.HttpPost]
-	public async Task<API.SubmitCommentResultDTO> SubmitComment(long parentId, string content)
+	public async Task<API.SubmitCommentResultDTO> SubmitComment(long parentId, [FromBody] string content)
 	{
 		string? sid = Request.Cookies["sid"];
 		if (string.IsNullOrEmpty(sid))

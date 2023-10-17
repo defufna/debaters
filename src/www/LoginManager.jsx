@@ -36,6 +36,8 @@ var user = null;
 
 export const isLoggedIn = () => user !== null;
 
+export const getUser = () => user.username;
+
 export function fetchWrapper(url, options) {
     let promise = fetch(url, options).then((response) => response.json());
     promise.then(data => {
