@@ -1,10 +1,10 @@
 import { fromBase62 } from './utils';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 
 
 export function VoteBox({ node, fetch }) {
     const [nodeState, setNodeState] = useState(node);
-
+    useEffect(() => setNodeState(node), [node]);
     const vote = async (ev, upvote) => {
         ev.stopPropagation();
 

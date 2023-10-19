@@ -3,10 +3,9 @@ import { register } from './LoginManager.jsx';
 
 
 export function RegisterForm({ onDone = (r) => { }, onCancel = () => { } }) {
-    const handleSubmit = (formData) => {
-        register(formData.username, formData.password, formData.email).then((result) => {
-            onDone(result);
-        })
+    const handleSubmit = async (formData) => {
+        const result = await register(formData.username, formData.password, formData.email)
+        return onDone(result);
     };
 
     return (

@@ -2,10 +2,15 @@ import { login } from './LoginManager.jsx';
 import { Form } from './Form.jsx';
 
 export function LoginForm({ onDone = (r) => { }, onCancel = () => { } } ) {
-    const handleSubmit = (formData) => {
-        login(formData.username, formData.password).then(res => {
-            onDone(res);
-        }).catch(error => console.log(error));
+    const handleSubmit = async (formData) => {
+        try {
+            const res = await login(formData.username, formData.password);
+            return onDone(res);
+        }
+        catch (error) {
+            console.log(error);
+        }
+        return null;
     };
 
     return (

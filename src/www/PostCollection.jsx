@@ -3,7 +3,7 @@ import { Post } from './Post.jsx';
 import { toBase62 } from './utils.js';
 import { route } from 'preact-router';
 import { SubmitPost } from './SubmitPost.jsx';
-import { isLoggedIn } from './LoginManager.jsx';
+import { addLoginListener, isLoggedIn } from './LoginManager.jsx';
 
 function prepare(data) {
     for (let i = 0; i < data.posts.length; i++) {
@@ -15,6 +15,28 @@ function prepare(data) {
 }
 
 export class PostCollection extends Component {
+    constructor(props) {
+        super(props);
+        this.fetchData = this.fetchData.bind(this);
+        this.loginChanged = this.loginChanged.bind(this);
+
+        addLoginListener(this.loginChanged);
+    }
+
+    loginChanged(user) {
+        const dataUser = this.state.user;
+        console.log(dataUser);
+        if (typeof dataUser === 'undefined')
+            return;
+
+        const dataUsername = (dataUser !== null) ? dataUser.username : null;
+        const username = (user !== null) ? user.username : null;
+
+        if (dataUsername !== username) {
+            this.fetchData();
+        }
+    }
+
     componentDidMount() {
         this.fetchData();
     }
@@ -31,13 +53,13 @@ export class PostCollection extends Component {
         fetch(url)
             .then(data => {
                 if (data.code === 0) {
-                    this.setState({ posts: prepare(data), error: null });
+                    this.setState({ posts: prepare(data), user: data.user, error: null });
                 }
                 else {
                     if (data.code === 4) {
-                        this.setState({ error: `Error fetching data, invalid community "${community}"`, data: null });
+                        this.setState({ error: `Error fetching data, invalid community "${community}"`, data: null, user: null });
                     } else {
-                        this.setState({ error: `Error fetching data`, data: null });
+                        this.setState({ error: `Error fetching data`, data: null, user: null });
                     }
                 }
             })
@@ -48,21 +70,21 @@ export class PostCollection extends Component {
             });
     }
 
-    render({ community = null, fetch, submit }, { posts = [], error = null }) {
+    render({ community = null, fetch, submit }, { posts = [], user = null, error = null }) {
         if (error !== null) {
             return (<p class="error">{error}</p>);
         }
 
         submit = submit === "";
 
-        let heading = (community === null) ? "Top Posts" : community;
+        const heading = (community === null) ? "Top Posts" : community;
 
         return (
             <div class="posts">
                 <h1>{heading}</h1>
                 {community !== null && isLoggedIn() &&
                     <div class="spanall">
-                        <button onClick={()=>route(`/c/${community}?submit`)}>Submit Post</button>
+                        <button onClick={() => route(`/c/${community}?submit`)}>Submit Post</button>
                     </div>
                 }
                 {submit &&

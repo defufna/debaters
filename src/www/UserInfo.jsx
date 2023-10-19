@@ -39,9 +39,10 @@ export class UserInfo extends Component {
 	registerDone(result) {
 		var message = "Registration successful! Now, please log in using your username and password.";
 		if (!result.success) {
-			message = result.message;
+			return result.message;
 		}
-		this.setState({ message: message });
+		this.setState({ message: message, state: Initial });
+		return null;
 	}
 
 	loginChanged(user) {
@@ -56,8 +57,9 @@ export class UserInfo extends Component {
 
 	loginDone(result) {
 		if (!result) {
-			this.setState({ message: "Sorry, but it seems your username or password is incorrect. Please recheck your login credentials and give it another shot." });
+			return "Sorry, but it seems your username or password is incorrect. Please recheck your login credentials and give it another shot.";
 		}
+		return null;
 	}
 
 	logoutClicked() {
